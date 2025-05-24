@@ -28,7 +28,7 @@
 #pragma link C++ class R3BAlpideNoisyPixels+;
 #pragma link C++ class R3BAlpideCluster+;
 #pragma link C++ class R3BAlpideGeometry+;
-
+#pragma link C++ class R3BDeadLGeometry+;
 
 #pragma link C++ class R3BAlpideMapped2Cal+;
 #pragma link C++ class R3BAlpideCal2Hit+;

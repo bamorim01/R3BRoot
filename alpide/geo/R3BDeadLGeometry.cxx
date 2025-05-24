@@ -22,27 +22,27 @@
 #include <TVector3.h>
 #include <iostream>
 
-#include "R3BAlpideGeometry.h"
+#include "R3BDeadLGeometry.h"
 #include "R3BLogger.h"
 
 #include <boost/regex.hpp>
 
-R3BAlpideGeometry* R3BAlpideGeometry::Instance()
+R3BDeadLGeometry* R3BDeadLGeometry::Instance()
 {
     // Returns singleton instance
-    static thread_local R3BAlpideGeometry instance;
+    static thread_local R3BDeadLGeometry instance;
     return &instance;
 }
 
-R3BAlpideGeometry::R3BAlpideGeometry()
+R3BDeadLGeometry::R3BDeadLGeometry()
     : TObject()
     , IsInitialize(kFALSE)
     , fGeometryVersion(2024)
-    , fNbSensor(864)
+    , fNbSensor(108)
 {
 }
 
-bool R3BAlpideGeometry::Init(Int_t version)
+bool R3BDeadLGeometry::Init(Int_t version)
 {
     if (!IsInitialize)
         IsInitialize = kTRUE;
@@ -121,7 +121,7 @@ bool R3BAlpideGeometry::Init(Int_t version)
     return kTRUE;
 }
 
-R3BAlpideGeometry::~R3BAlpideGeometry()
+R3BDeadLGeometry::~R3BDeadLGeometry()
 {
     R3BLOG(debug, "");
     if (gGeoManager)
@@ -132,10 +132,8 @@ R3BAlpideGeometry::~R3BAlpideGeometry()
     }
 }
 
-const TVector3& R3BAlpideGeometry::GetAngles(Int_t iD)
+const TVector3& R3BDeadLGeometry::GetAngles(Int_t iD)
 {
-    
-    fNbSensor = 864;	
     static std::map<int, TVector3> cache;
     Double_t local[3] = { 0, 0, 0 };
     Double_t master[3];
@@ -168,9 +166,8 @@ const TVector3& R3BAlpideGeometry::GetAngles(Int_t iD)
 }
 
 // Rotation matrix
-const TRotation R3BAlpideGeometry::GetRotation(Int_t iD)
+const TRotation R3BDeadLGeometry::GetRotation(Int_t iD)
 {
-    fNbSensor = 864;
     static std::map<int, TRotation> cache;
     Double_t local[3] = { 0, 0, 0 };
     Double_t master[3];
@@ -235,9 +232,8 @@ const TRotation R3BAlpideGeometry::GetRotation(Int_t iD)
 }
 
 // Translation vector
-const TVector3& R3BAlpideGeometry::GetTranslation(Int_t iD)
+const TVector3& R3BDeadLGeometry::GetTranslation(Int_t iD)
 {
-    fNbSensor = 864;
     static std::map<int, TVector3> cache;
     Double_t local[3] = { 0, 0, 0 };
     Double_t master[3];
@@ -276,9 +272,8 @@ const TVector3& R3BAlpideGeometry::GetTranslation(Int_t iD)
     return cache[iD] = trans;
 }
 
-void R3BAlpideGeometry::GetAngles(Int_t iD, Double_t* polar, Double_t* azimuthal, Double_t* rho)
+void R3BDeadLGeometry::GetAngles(Int_t iD, Double_t* polar, Double_t* azimuthal, Double_t* rho)
 {
-    fNbSensor = 864;
     auto& masterV = this->GetAngles(iD);
     *polar = masterV.Theta();
     *azimuthal = masterV.Phi();
@@ -289,9 +284,8 @@ void R3BAlpideGeometry::GetAngles(Int_t iD, Double_t* polar, Double_t* azimuthal
     }
 }
 
-const char* R3BAlpideGeometry::GetSensorVolumePath(Int_t iD)
+const char* R3BDeadLGeometry::GetSensorVolumePath(Int_t iD)
 {
-    fNbSensor = 864;
     static char nameVolume[300];
     Int_t sid = 0;
     Int_t bartype = 0;
@@ -329,7 +323,7 @@ const char* R3BAlpideGeometry::GetSensorVolumePath(Int_t iD)
             layertype++;
         }
 
-        sprintf(nameVolume, "/cave_1/TargetChamberWorld_0/Multilayer_%i_%i/Alpide_%i", bartype, layertype, sid);
+        sprintf(nameVolume, "/cave_1/TargetChamberWorld_0/Multilayer_%i_%i/DeadL_%i", bartype, layertype, sid);
     }
     else
     {
@@ -339,11 +333,10 @@ const char* R3BAlpideGeometry::GetSensorVolumePath(Int_t iD)
     return nameVolume;
 }
 
-int R3BAlpideGeometry::GetBarrelId(const char* volumePath)
+int R3BDeadLGeometry::GetBarrelId(const char* volumePath)
 {
-    fNbSensor = 864;
     Int_t barID = 0;
-    static auto restr = "Multilayer_([0-9]+)_([0-9]+)/Alpide_([0-9]+)";
+    static auto restr = "Multilayer_([0-9]+)_([0-9]+)/DeadL_([0-9]+)";
     static auto re = boost::regex(restr, boost::regex::extended);
     boost::cmatch m;
     if (!boost::regex_search(volumePath, m, re))
@@ -363,14 +356,13 @@ int R3BAlpideGeometry::GetBarrelId(const char* volumePath)
     return barID;
 }
 
-int R3BAlpideGeometry::GetSensorId(const char* volumePath)
+int R3BDeadLGeometry::GetSensorId(const char* volumePath)
 {
-    fNbSensor = 864;
     Int_t sensorId = 0;
     Int_t barID = 0;
     Int_t layerID = 0;
     Int_t alpideID = 0;
-    static auto restr = "Multilayer_([0-9]+)_([0-9]+)/Alpide_([0-9]+)";
+    static auto restr = "Multilayer_([0-9]+)_([0-9]+)/DeadL_([0-9]+)";
     static auto re = boost::regex(restr, boost::regex::extended);
     boost::cmatch m;
     if (!boost::regex_search(volumePath, m, re))
@@ -404,11 +396,11 @@ int R3BAlpideGeometry::GetSensorId(const char* volumePath)
         sensorId = (layerID - 1) * 6 + alpideID;
     }
 
-    R3BLOG(info,
+    R3BLOG(debug,
            "Barrel ID: " << barID << ", multiflex ID: " << layerID << ", sensorID in multiflex: " << alpideID
                          << ", sensorID: " << sensorId);
 
     return sensorId;
 }
 
-ClassImp(R3BAlpideGeometry)
+ClassImp(R3BDeadLGeometry)
