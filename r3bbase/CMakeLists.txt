@@ -1,6 +1,6 @@
 ##############################################################################
 #   Copyright (C) 2019 GSI Helmholtzzentrum für Schwerionenforschung GmbH    #
-#   Copyright (C) 2019-2024 Members of R3B Collaboration                     #
+#   Copyright (C) 2019-2025 Members of R3B Collaboration                     #
 #                                                                            #
 #             This software is distributed under the terms of the            #
 #                 GNU General Public Licence (GPL) version 3,                #
@@ -68,7 +68,7 @@ add_library_with_dictionary(
 
 if(CMAKE_CXX_COMPILER_ID STREQUAL "GNU" AND CMAKE_CXX_COMPILER_VERSION VERSION_LESS 9)
     message(STATUS "Linking -lstdc++fs due to the old version of gcc")
-    target_link_libraries(R3BBase PUBLIC -lstdc++fs)
+    target_link_libraries(R3BBase PUBLIC -lstdc++fs -lTree)
 endif()
 
 if("${FairRoot_VERSION}" VERSION_LESS 19.0.0)

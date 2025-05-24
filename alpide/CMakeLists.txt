@@ -26,6 +26,7 @@ change_file_extension(*.cxx *.h HEADERS "${SRCS}")
 add_library_with_dictionary(
     LIBNAME
     R3BAlpide
+    R3BDeadL
     LINKDEF
     AlpideLinkDef.h
     HEADERS

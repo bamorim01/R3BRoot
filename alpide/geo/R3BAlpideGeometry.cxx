@@ -1,6 +1,6 @@
 /******************************************************************************
  *   Copyright (C) 2019 GSI Helmholtzzentrum für Schwerionenforschung GmbH    *
- *   Copyright (C) 2019-2024 Members of R3B Collaboration                     *
+ *   Copyright (C) 2019-2025 Members of R3B Collaboration                     *
  *                                                                            *
  *             This software is distributed under the terms of the            *
  *                 GNU General Public Licence (GPL) version 3,                *
@@ -65,7 +65,7 @@ bool R3BAlpideGeometry::Init(Int_t version)
         case 2026:
             // Two barrels
             geoPath += "target_area_alpide_barrel_v26.geo.root";
-            fNbSensor = 363;
+            fNbSensor = 456;//363;//500
             fGeometryVersion = version;
             break;
 
@@ -297,7 +297,7 @@ const char* R3BAlpideGeometry::GetSensorVolumePath(Int_t iD)
     {
         if (fGeometryVersion == 2026 || fGeometryVersion == 2028)
         {
-            if (iD <= 153)
+            if (iD <= 216)//153)//216)
             {
                 bartype = 1;
                 layertype = (iD - 1) / 9;
@@ -306,10 +306,11 @@ const char* R3BAlpideGeometry::GetSensorVolumePath(Int_t iD)
             }
             else
             {
+		std::cout<<"KETAMINE"<<std::endl;
                 bartype = 2;
-                sid = iD - 154;
+                sid = iD - 217;//217;
                 layertype = sid / 10;
-                sid = iD - 153 - layertype * 10;
+                sid = iD - 216 - (layertype * 10);
                 layertype++;
             }
         }
@@ -383,7 +384,7 @@ int R3BAlpideGeometry::GetSensorId(const char* volumePath)
         if (barID == 2)
         {
             sensorId = (layerID - 1) * 10 + alpideID;
-            sensorId += 153;
+            sensorId += 216;
         }
         else
         {

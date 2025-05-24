@@ -19,13 +19,22 @@
 #include "libs.hh"
 
 using namespace std;
+Int_t calculatePDGID(int Z,int A,int I=0)
+{
+	Int_t pdgID=(1000000000)+(Z*10000) + (A*10) +9;
+	return pdgID;
+}
 
 void run(TString fname)
 {
+
+    TF1*Zpdf = new TF1("Zpdf", "[1]*exp(-1*[0]*x)",0,1.5);
+    Zpdf->SetParameter (0,SLOPE);
+    Zpdf->SetParameter(1,1);
     //------- Output tree ----------
     TFile file("quasi.root", "RECREATE");
     TTree* tree = new TTree("tree", "Tree with simulated QFS kinematics");
-    //        #include "tree.hh"
+#include "info/tree.hh"
     //--------------------- Beam parameters -----------------------------
     const double Tkin = ENERGY * A; // Total kinetic energy (MeV) of the projectile
     //
@@ -42,7 +51,7 @@ void run(TString fname)
     cout << "Total energy:\t\t" << EA << " MeV" << endl;
     cout << "Excitation energy:\t" << Exe << " MeV" << endl;
     cout << "Beta (beam):\t\t" << (-bA) << "\nGamma (beam):\t" << gA << endl;
-   
+
     cout << "Beta (CM):\t\t" << PA / (EA + Mi) << endl;
     cout << "Processing " << MAX_STORY << " events........\n" << endl;
 
@@ -71,9 +80,9 @@ void run(TString fname)
         TVector3 PB;
         PB.SetXYZ((-Pa.X()), (-Pa.Y()), (-Pa.Z()));
         // Tree variables for the fragmnent
-        auto PBx = PB.X();
-        auto PBy = PB.Y();
-        auto PBz_rf = PB.Z();
+        PBx = PB.X();
+        PBy = PB.Y();
+        PBz_rf = PB.Z();
 
         // Off-shell mass of the bound nucleon from the energy conservation
         // in the virtual dissociation A->B+a
@@ -87,7 +96,7 @@ void run(TString fname)
 
         // Total energies of "a" and "B" in the restframe of "A"
         double Ea = sqrt(Ma_off * Ma_off + Pa.Mag2());
-        double EB = sqrt(MB * MB + PB.Mag2());
+         EB = sqrt(MB * MB + PB.Mag2());
 
         //------- Lorentz transformations into laboratory system ---------
         std::pair<double, double> lora = Lorentz(gA, bA, Ea, Pa.Z());
@@ -100,7 +109,7 @@ void run(TString fname)
 
         //---------- Generating CM scattering process ----------
         double S = Ma_off * Ma_off + Mi * Mi + 2 * Mi * EaL; // Mandelstam invariant
-        auto Mandelstam_S = S;                               // filling tree variable
+        Mandelstam_S = S;                               // filling tree variable
         // Now generate CM scattering kinematics
         cm_values CM = CENMASS(S, Ma_off, Mi, Ma, ISOTROPIC);
         if (!CM.good)
@@ -132,39 +141,39 @@ void run(TString fname)
         TVector3 P2L = DREHUNG(P2cm, Pa);
 
         //--------- Filling in the ROOTTree variables------------
-        auto theta_1 = P1L.Theta();
-        auto theta_2 = P2L.Theta();
-        auto theta_B = PB.Theta();
+        theta_1 = P1L.Theta();
+        theta_2 = P2L.Theta();
+        theta_B = PB.Theta();
 
-        auto phi_1 = P1L.Phi();
-        auto phi_2 = P2L.Phi();
-        auto phi_B = PB.Phi();
+        phi_1 = P1L.Phi();
+        phi_2 = P2L.Phi();
+        phi_B = PB.Phi();
 
-        auto P1x = P1L.X();
-        auto P1y = P1L.Y();
-        auto P1z = P1L.Z();
+        P1x = P1L.X();
+        P1y = P1L.Y();
+        P1z = P1L.Z();
 
-        auto P2x = P2L.X();
-        auto P2y = P2L.Y();
-        auto P2z = P2L.Z();
+        P2x = P2L.X();
+        P2y = P2L.Y();
+        P2z = P2L.Z();
 
-        auto PBz_lab = PB.Z();
+        PBz_lab = PB.Z();
 
-        auto E1 = sqrt(Mi * Mi + P1L.Mag2()) - Mi;
-        auto E2 = sqrt(Ma * Ma + P2L.Mag2()) - Ma;
+        E1 = sqrt(Mi * Mi + P1L.Mag2()) - Mi;
+        E2 = sqrt(Ma * Ma + P2L.Mag2()) - Ma;
         EB = sqrt(MB * MB + PB.Mag2()) - MB;
 
-        auto th1_cm = CM.theta_scat;
-        auto th2_cm = CM.theta_clust;
-        auto P1_cm = CM.p_scat;
-        auto P2_cm = CM.p_clust;
-        auto Moff = Ma_off;
-        auto Mandelstam_T = CM.T;
-        auto Opang = acos(sin(P1L.Theta()) * sin(P2L.Theta()) * cos(P1L.Phi() - P2L.Phi()) +
+        th1_cm = CM.theta_scat;
+        th2_cm = CM.theta_clust;
+        P1_cm = CM.p_scat;
+        P2_cm = CM.p_clust;
+        Moff = Ma_off;
+        Mandelstam_T = CM.T;
+        Opang = acos(sin(P1L.Theta()) * sin(P2L.Theta()) * cos(P1L.Phi() - P2L.Phi()) +
                           cos(P1L.Theta()) * cos(P2L.Theta()));
 
         double df = fabs(phi_1 - phi_2);
-        double Dif_phi;
+        //double Dif_phi;
 
         if (df > 0 && df <= PI)
             Dif_phi = df;
@@ -172,20 +181,59 @@ void run(TString fname)
             Dif_phi = 2 * PI - df;
 
         // if(events%10000==0) cout<< events <<" of "<<MAX_STORY<<" ("<<(float)events/MAX_STORY*100<<"%)"<<endl;
-
+	double Vx = r1.Gaus(MEANX,SIGMAX);
+        double Vy = r1.Gaus(MEANY,SIGMAY);
+	double Vz = Zpdf->GetRandom()-0.75;
         // the new R3BAsciiGenerator wants this as an input:
         // eventId >> nTracks >> pBeam;
         // iPid  >> iZ >> iA >> px >> py >> pz >> vx >> vy >> vz;
-        sprintf(tooutfile,
-                "%d\t2\t%0.5E\n2212\t1\t1\t%0.5E\t%0.5E\t%0.5E\t0\t0\t0\n2212\t1\t1\t%0.5E\t%0.5E\t%0.5E\t0\t0\t0\n",
+ 
+	sprintf(tooutfile,
+                "%d\t2\t%0.5E\n2212\t1\t1\t%0.5E\t%0.5E\t%0.5E\t%0.5E\t%0.5E\t%0.5E\n2212\t1\t1\t%0.5E\t%0.5E\t%0.5E\t%0.5E\t%0.5E\t%0.5E\n",
                 events,
                 PA / 1000,
                 P2x / 1000,
                 P2y / 1000,
                 P2z / 1000,
+		Vx,
+		Vy,
+		Vz,
                 P1x / 1000,
                 P1y / 1000,
-                P1z / 1000);
+                P1z / 1000,
+		Vx,
+		Vy,
+		Vz);
+
+/*	Int_t pdgIDB=calculatePDGID(5,11,0);
+        sprintf(tooutfile,
+                "%d\t3\t%0.5E\n%i\t1\t1\t%0.5E\t%0.5E\t%0.5E\t%0.5E\t%0.5E\t%0.5E\n2212\t1\t1\t%0.5E\t%0.5E\t%0.5E\t%0.5E\t%0.5E\t%0.5E\n2212\t1\t1\t%0.5E\t%0.5E\t%0.5E\t%0.5E\t%0.5E\t%0.5E\n",
+                events,
+		//pdgIDB,
+		1000050110,
+		PA,
+		pow(PB.Mag2()-(PB.X()*PB.X()+PB.Y()*PB.Y()),0.5),
+		PBx/1000,
+		PBy/1000,
+		PBz_lab/1000,
+		Vx,
+		Vy,
+		Vz,
+                P2x / 1000,
+                P2y / 1000,
+                P2z / 1000,
+		Vx,
+		Vy,
+		Vz,
+                P1x / 1000,
+                P1y / 1000,
+                P1z / 1000,
+		Vx,
+		Vy,
+		Vz);
+*/
+
+
 
         outfile_ascii << tooutfile; // create an input for the R3BAsciiGenerator
 

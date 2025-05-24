@@ -1,6 +1,6 @@
 /******************************************************************************
  *   Copyright (C) 2019 GSI Helmholtzzentrum für Schwerionenforschung GmbH    *
- *   Copyright (C) 2019-2024 Members of R3B Collaboration                     *
+ *   Copyright (C) 2019-2025 Members of R3B Collaboration                     *
  *                                                                            *
  *             This software is distributed under the terms of the            *
  *                 GNU General Public Licence (GPL) version 3,                *
@@ -14,7 +14,7 @@
 #ifndef R3BPSPXREADER_H
 #define R3BPSPXREADER_H
 
-#include "R3BReader.h"
+#include "/shared/storage/physnp/lr885/R3BRoot/r3bsource/base/R3BReader.h"
 #include <Rtypes.h>
 
 struct EXT_STR_h101_PSP_t;

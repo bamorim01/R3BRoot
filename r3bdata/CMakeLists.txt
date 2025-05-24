@@ -1,6 +1,6 @@
 ##############################################################################
 #   Copyright (C) 2019 GSI Helmholtzzentrum für Schwerionenforschung GmbH    #
-#   Copyright (C) 2019-2024 Members of R3B Collaboration                     #
+#   Copyright (C) 2019-2025 Members of R3B Collaboration                     #
 #                                                                            #
 #             This software is distributed under the terms of the            #
 #                 GNU General Public Licence (GPL) version 3,                #
@@ -22,8 +22,10 @@ set(SRCS
     actarData/R3BActarPoint.cxx
     alpideData/R3BAlpideCalData.cxx
     alpideData/R3BAlpideHitData.cxx
+    alpideData/R3BDeadLHitData.cxx
     alpideData/R3BAlpideMappedData.cxx
     alpideData/R3BAlpidePoint.cxx
+    alpideData/R3BDeadLPoint.cxx
     amsData/R3BAmsHitData.cxx
     amsData/R3BAmsMappedData.cxx
     amsData/R3BAmsStripCalData.cxx
@@ -69,9 +71,6 @@ set(SRCS
     losData/R3BLosHitData.cxx
     losData/R3BLosMappedData.cxx
     losData/R3BLosTCalData.cxx
-    lumonData/ELILuMonPoint.cxx
-    mfiData/R3BMfiDigi.cxx
-    mfiData/R3BMfiPoint.cxx
     mtofData/R3BmTofDigi.cxx
     mtofData/R3BmTofPoint.cxx
     musicData/R3BMusicCalData.cxx
@@ -164,18 +163,17 @@ set(SRCS
     twimData/R3BTwimMappedData.cxx
     twimData/R3BTwimPoint.cxx
     vetoData/R3BVetoPoint.cxx
-    wrData/R3BWRData.cxx
-    xballData/R3BXBallCrystalHit.cxx
-    xballData/R3BXBallCrystalHitSim.cxx
-    xballData/R3BXBallPoint.cxx)
+    wrData/R3BWRData.cxx)
 
 set(HEADERS
     #cmake-format: sortable
     actarData/R3BActarPoint.h
     alpideData/R3BAlpideCalData.h
     alpideData/R3BAlpideHitData.h
+    alpideData/R3BDeadLHitData.h
     alpideData/R3BAlpideMappedData.h
     alpideData/R3BAlpidePoint.h
+    alpideData/R3BDeadLPoint.h
     amsData/R3BAmsHitData.h
     amsData/R3BAmsMappedData.h
     amsData/R3BAmsStripCalData.h
@@ -221,9 +219,6 @@ set(HEADERS
     losData/R3BLosHitData.h
     losData/R3BLosMappedData.h
     losData/R3BLosTCalData.h
-    lumonData/ELILuMonPoint.h
-    mfiData/R3BMfiDigi.h
-    mfiData/R3BMfiPoint.h
     mtofData/R3BmTofDigi.h
     mtofData/R3BmTofPoint.h
     musicData/R3BMusicCalData.h
@@ -316,10 +311,7 @@ set(HEADERS
     twimData/R3BTwimMappedData.h
     twimData/R3BTwimPoint.h
     vetoData/R3BVetoPoint.h
-    wrData/R3BWRData.h
-    xballData/R3BXBallCrystalHit.h
-    xballData/R3BXBallCrystalHitSim.h
-    xballData/R3BXBallPoint.h)
+    wrData/R3BWRData.h)
 
 set(DIRS
     actarData
@@ -335,8 +327,6 @@ set(DIRS
     gfiData
     landData
     losData
-    lumonData
-    mfiData
     mtofData
     musicData
     musliData
@@ -359,8 +349,7 @@ set(DIRS
     tttxData
     twimData
     vetoData
-    wrData
-    xballData)
+    wrData)
 
 add_library_with_dictionary(
     LIBNAME

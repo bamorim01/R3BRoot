@@ -2,7 +2,7 @@
 
 /******************************************************************************
  *   Copyright (C) 2019 GSI Helmholtzzentrum für Schwerionenforschung GmbH    *
- *   Copyright (C) 2019-2024 Members of R3B Collaboration                     *
+ *   Copyright (C) 2019-2025 Members of R3B Collaboration                     *
  *                                                                            *
  *             This software is distributed under the terms of the            *
  *                 GNU General Public Licence (GPL) version 3,                *
@@ -25,9 +25,6 @@
 #pragma link C++ class R3BDouble+;
 #pragma link C++ class R3BTrack+;
 
-#pragma link C++ class R3BXBallPoint+;
-#pragma link C++ class R3BXBallCrystalHit+;
-#pragma link C++ class R3BXBallCrystalHitSim+;
 #pragma link C++ class R3BCalifaMappedData+;
 #pragma link C++ class R3BCalifaCrystalCalData+;
 #pragma link C++ class R3BCalifaClusterData+;
@@ -58,9 +55,11 @@
 #pragma link C++ class R3BFootCalData+;
 #pragma link C++ class R3BFootHitData+;
 #pragma link C++ class R3BAlpidePoint+;
+#pragma link C++ class R3BDeadLPoint+;
 #pragma link C++ class R3BAlpideMappedData+;
 #pragma link C++ class R3BAlpideCalData+;
 #pragma link C++ class R3BAlpideHitData+;
+#pragma link C++ class R3BDeadLHitData+;
 #pragma link C++ class R3BRpcMappedData+;
 #pragma link C++ class R3BRpcPreCalData+;
 #pragma link C++ class R3BRpcCalData+;
@@ -108,9 +107,6 @@
 #pragma link C++ class R3BLandFirstHits+;
 #pragma link C++ class R3BLandHit+;
 #pragma link C++ class R3BPaddleCrystalHit+;
-#pragma link C++ class ELILuMonPoint+;
-#pragma link C++ class R3BMfiPoint+;
-#pragma link C++ class R3BMfiDigi+;
 #pragma link C++ class R3BPspPoint+;
 #pragma link C++ class R3BPspDigi+;
 #pragma link C++ class R3BNeulandTacquilaMappedData+;

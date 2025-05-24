@@ -1,0 +1,76 @@
+/******************************************************************************
+ *   Copyright (C) 2022 GSI Helmholtzzentrum für Schwerionenforschung GmbH    *
+ *   Copyright (C) 2022-2024 Members of R3B Collaboration                     *
+ *                                                                            *
+ *             This software is distributed under the terms of the            *
+ *                 GNU General Public Licence (GPL) version 3,                *
+ *                    copied verbatim in the file "LICENSE".                  *
+ *                                                                            *
+ * In applying this license GSI does not waive the privileges and immunities  *
+ * granted to it by virtue of its status as an Intergovernmental Organization *
+ * or submit itself to any jurisdiction.                                      *
+ ******************************************************************************/
+
+// -------------------------------------------------------------------------
+// -----                      R3BAlpidePoint source file               -----
+// -------------------------------------------------------------------------
+
+#include "R3BDeadLPoint.h"
+
+// -----   Default constructor   -------------------------------------------
+R3BDeadLPoint::R3BDeadLPoint()
+    : FairMCPoint()
+{
+    fSensorID = 0;
+    fPid = 0;
+    fX_out = fY_out = fZ_out = fEloss = 0.;
+    fPx_out = fPy_out = fPz_out = 0.;
+}
+// -------------------------------------------------------------------------
+
+// -----   Standard constructor   ------------------------------------------
+R3BDeadLPoint::R3BDeadLPoint(Int_t trackID,
+                               Int_t detID,
+                               Int_t sensorID,
+                               TVector3 posIn,
+                               TVector3 posOut,
+                               TVector3 momIn,
+                               TVector3 momOut,
+                               Double_t tof,
+                               Double_t length,
+                               Double_t eLoss,
+                               Int_t PId)
+    : FairMCPoint(trackID, detID, posIn, momIn, tof, length, eLoss)
+{
+    fSensorID = sensorID;
+    fPid = PId;
+    fX_out = posOut.X();
+    fY_out = posOut.Y();
+    fZ_out = posOut.Z();
+    fEloss = eLoss;
+    fPx_out = momOut.Px();
+    fPy_out = momOut.Py();
+    fPz_out = momOut.Pz();
+}
+
+// -----   Point x coordinate from linear extrapolation   ------------------
+Double_t R3BDeadLPoint::GetX(Double_t z) const
+{
+    if ((fZ_out - z) * (fZ - z) >= 0.)
+        return (fX_out + fX) / 2.;
+    Double_t dz = fZ_out - fZ;
+    return (fX + (z - fZ) / dz * (fX_out - fX));
+}
+// -------------------------------------------------------------------------
+
+// -----   Point y coordinate from linear extrapolation   ------------------
+Double_t R3BDeadLPoint::GetY(Double_t z) const
+{
+    if ((fZ_out - z) * (fZ - z) >= 0.)
+        return (fY_out + fY) / 2.;
+    Double_t dz = fZ_out - fZ;
+    return (fY + (z - fZ) / dz * (fY_out - fY));
+}
+// -------------------------------------------------------------------------
+
+ClassImp(R3BDeadLPoint)
