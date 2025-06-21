@@ -65,7 +65,7 @@ bool R3BAlpideGeometry::Init(Int_t version)
         case 2026:
             // Two barrels
             geoPath += "target_area_alpide_barrel_v26.geo.root";
-            fNbSensor = 456;//363;//500
+            fNbSensor = 888;//363;//500
             fGeometryVersion = version;
             break;
 
@@ -135,7 +135,7 @@ R3BAlpideGeometry::~R3BAlpideGeometry()
 const TVector3& R3BAlpideGeometry::GetAngles(Int_t iD)
 {
     
-    fNbSensor = 864;	
+    //fNbSensor = 864;	
     static std::map<int, TVector3> cache;
     Double_t local[3] = { 0, 0, 0 };
     Double_t master[3];
@@ -170,7 +170,7 @@ const TVector3& R3BAlpideGeometry::GetAngles(Int_t iD)
 // Rotation matrix
 const TRotation R3BAlpideGeometry::GetRotation(Int_t iD)
 {
-    fNbSensor = 864;
+    //fNbSensor = 864;
     static std::map<int, TRotation> cache;
     Double_t local[3] = { 0, 0, 0 };
     Double_t master[3];
@@ -291,7 +291,7 @@ void R3BAlpideGeometry::GetAngles(Int_t iD, Double_t* polar, Double_t* azimuthal
 
 const char* R3BAlpideGeometry::GetSensorVolumePath(Int_t iD)
 {
-    fNbSensor = 864;
+    //fNbSensor = 864;
     static char nameVolume[300];
     Int_t sid = 0;
     Int_t bartype = 0;
@@ -303,22 +303,43 @@ const char* R3BAlpideGeometry::GetSensorVolumePath(Int_t iD)
     {
         if (fGeometryVersion == 2026 || fGeometryVersion == 2028)
         {
-            if (iD <= 216)//153)//216)
-            {
-                bartype = 1;
-                layertype = (iD - 1) / 9;
-                sid = iD - layertype * 9;
-                layertype++;
-            }
-            else
-            {
-		std::cout<<"KETAMINE"<<std::endl;
-                bartype = 2;
-                sid = iD - 217;//217;
-                layertype = sid / 10;
-                sid = iD - 216 - (layertype * 10);
-                layertype++;
-            }
+            if (iD <= 432){
+		if (iD <= 216 )//153)//216)
+            	{
+               		bartype = 1;
+               		layertype = (iD - 1) / 9;
+                	sid = iD - layertype * 9;
+                	layertype++;
+            	}
+            	else
+            	{
+			std::cout<<"KETAMINE"<<std::endl;
+                	bartype = 2;
+              	 	sid = iD - 217;//217;
+                	layertype = sid / 10;
+                	sid = iD - 216 - (layertype * 10);
+                	layertype++;
+            	}
+	   }
+
+	   if (iD >= 432){
+                if (iD <= 648 )//153)//216)
+                {
+                        bartype = 1;
+                        layertype = (iD - 1) / 9;
+                        sid = iD - layertype * 9;
+                        layertype++;
+                }
+                else
+                {
+                        std::cout<<"KETAMINE"<<std::endl;
+                        bartype = 2;
+                        sid = iD - (217 + 432);//217;
+                        layertype = sid / 10;
+                        sid = iD - (216+432) - (layertype * 10);
+                        layertype++;
+                }
+           }
         }
         else
         {
@@ -336,12 +357,14 @@ const char* R3BAlpideGeometry::GetSensorVolumePath(Int_t iD)
         R3BLOG(error, "Invalid sensorId: " << iD);
     }
 
+
+
     return nameVolume;
 }
 
 int R3BAlpideGeometry::GetBarrelId(const char* volumePath)
 {
-    fNbSensor = 864;
+    //fNbSensor = 864;
     Int_t barID = 0;
     static auto restr = "Multilayer_([0-9]+)_([0-9]+)/Alpide_([0-9]+)";
     static auto re = boost::regex(restr, boost::regex::extended);
@@ -365,7 +388,7 @@ int R3BAlpideGeometry::GetBarrelId(const char* volumePath)
 
 int R3BAlpideGeometry::GetSensorId(const char* volumePath)
 {
-    fNbSensor = 864;
+    //fNbSensor = 864;
     Int_t sensorId = 0;
     Int_t barID = 0;
     Int_t layerID = 0;
@@ -388,16 +411,17 @@ int R3BAlpideGeometry::GetSensorId(const char* volumePath)
     alpideID = std::stoi(m[3].str()); // converting to int the alpide type
 
     if (fGeometryVersion == 2026 || fGeometryVersion == 2028)
-    {
-        if (barID == 2)
-        {
-            sensorId = (layerID - 1) * 10 + alpideID;
-            sensorId += 216;
-        }
-        else
-        {
-            sensorId = (layerID - 1) * 9 + alpideID;
-        }
+    {	
+	 
+    	    	if (barID == 2)
+        	{
+            		sensorId = (layerID - 1) * 10 + alpideID;
+            		sensorId += 432;
+        	}
+        	else
+        	{
+            		sensorId = (layerID - 1) * 9 + alpideID;
+        	}
     }
     else
     {
