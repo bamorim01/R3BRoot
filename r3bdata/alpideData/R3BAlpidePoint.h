@@ -87,7 +87,6 @@ class R3BAlpidePoint : public FairMCPoint
     void PositionIn(TVector3& pos) { pos.SetXYZ(fX, fY, fZ); }
     void PositionOut(TVector3& pos) { pos.SetXYZ(fX_out, fY_out, fZ_out); }
     void MomentumOut(TVector3& mom) { mom.SetXYZ(fPx_out, fPy_out, fPz_out); }
-
     /** Point coordinates at given z from linear extrapolation **/
     Double_t GetX(Double_t z) const;
     Double_t GetY(Double_t z) const;

@@ -24,5 +24,6 @@ cm_values 	          CENMASS(double,double,double,double,bool);
 double 			  momentum_CM(double,double,double);
 double 			  get_T(double,double);
 std::pair<double, double> Lorentz(double,double,double,double);
+int			  calculatePDGID(int,int,int);
 void 			  run();
 #endif //__HEADERS_HH__

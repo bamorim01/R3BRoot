@@ -76,6 +76,6 @@ void Config()
     LOG(info) << "g4Config() using g4conf  macro: " << configm1;
 
     // set geant4 specific stuff
-    geant4->SetMaxNStep(30000);
+    geant4->SetMaxNStep(60000);
     geant4->ProcessGeantMacro(configm1.Data());
 }

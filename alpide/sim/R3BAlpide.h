@@ -92,7 +92,7 @@ class R3BAlpide : public R3BDetector
 
     void Initialize() override;
 
-    void SetSpecialPhysicsCuts() override;
+//    void SetSpecialPhysicsCuts() override;
 
   private:
     /** Track information to be stored until the track leaves the

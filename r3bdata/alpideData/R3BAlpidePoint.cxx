@@ -48,9 +48,9 @@ R3BAlpidePoint::R3BAlpidePoint(Int_t trackID,
     fY_out = posOut.Y();
     fZ_out = posOut.Z();
     fEloss = eLoss;
-    fPx_out = momOut.Px();
-    fPy_out = momOut.Py();
-    fPz_out = momOut.Pz();
+    fPx_out = momIn.Px();
+    fPy_out = momIn.Py();
+    fPz_out = momIn.Pz();
 }
 
 // -----   Point x coordinate from linear extrapolation   ------------------

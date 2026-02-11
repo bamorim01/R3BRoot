@@ -27,7 +27,7 @@ void ana_file()
 	auto VX=new TH1D("VX","",1000,100,-100);
 	auto VY=new TH1D("VY","",1000,100,-100);
 	auto VZ=new TH1D("VZ","",1000,100,-100);
-	
+	//auto phi=new TH1D("VZ","",1000,100,-100);
     if (!fFile.is_open())
     {
 
@@ -57,6 +57,7 @@ void ana_file()
 		VX->Fill(ivx);
 		VY->Fill(ivy);
 		VZ->Fill(ivz);
+		
         } //! tracks
 
         printf("Processed: \033[32m %d \033[0m \033[31m \033[0m \r", eventId);

@@ -20,7 +20,6 @@
 #include "R3BAlpideGeometry.h"
 #include "R3BAlpideMappingPar.h"
 #include "R3BAlpidePoint.h"
-#include "R3BDeadLPoint.h"
 #include "R3BLogger.h"
 #include "R3BMCTrack.h"
 #include "R3BTGeoPar.h"
@@ -123,6 +122,7 @@ void R3BAlpideDigitizer::Exec(Option_t*)
     Int_t TrackId = 0, PID = 0;
     Double_t x = 0., y = 0., z = 0.;
     TVector3 vpos;
+    TVector3 vpos1;
     for (Int_t i = 0; i < nHits; i++)
     {
         fRot.SetToIdentity();
@@ -150,6 +150,7 @@ void R3BAlpideDigitizer::Exec(Option_t*)
         fTrans = fAlpideGeo->GetTranslation(sid);
         TVector3 vtpos = (vpos - fTrans);
 
+
         fRot = fAlpideGeo->GetRotation(sid);
         // std::cout <<"Rot "<< fRot.XX() <<" "<< fRot.XY() <<" "<< fRot.XZ() << std::endl;
         // std::cout <<"Rot "<< fRot.YX() <<" "<< fRot.YY() <<" "<< fRot.YZ() << std::endl;
@@ -167,12 +168,13 @@ void R3BAlpideDigitizer::Exec(Option_t*)
         {
             // Lab frame
             TVector3 labpos = fRot * localpos + fTrans;
-            AddHitData(sid, fClusterSize, labpos.X() * 10., labpos.Y() * 10., labpos.Z() * 10.); // mm
+            AddHitData(sid, fClusterSize,labpos.X() * 10., labpos.Y() * 10., labpos.Z() * 10.,localpos.Z() * 10., localpos.X() * 10.); // mm
         }
         else
         {
             // Sensor frame
-            AddHitData(sid, fClusterSize, localpos.Z() * 10., localpos.X() * 10.); // mm
+	    TVector3 labpos = fRot * localpos + fTrans;
+            AddHitData(sid, fClusterSize, labpos.X() * 10., labpos.Y() * 10., labpos.Z() * 10., localpos.Z() * 10., localpos.X() * 10.); // mm
         }
         //}
     }
@@ -205,12 +207,12 @@ void R3BAlpideDigitizer::Reset()
 }
 
 // -----   Private method AddHitData  -------------------------------------------
-R3BAlpideHitData* R3BAlpideDigitizer::AddHitData(UInt_t sid, uint16_t clustersize, Double_t x, Double_t y, Double_t z)
+R3BAlpideHitData* R3BAlpideDigitizer::AddHitData(UInt_t sid, uint16_t clustersize, Double_t x, Double_t y, Double_t z, Double_t locx, Double_t locy)
 {
     // It fills the R3BAlpideHitData
     TClonesArray& clref = *fAlpideHits;
     Int_t size = clref.GetEntriesFast();
-    return new (clref[size]) R3BAlpideHitData(sid, clustersize, x, y, z);
+    return new (clref[size]) R3BAlpideHitData(sid, clustersize, x, y, z,locx,locy);
 }
 
 ClassImp(R3BAlpideDigitizer)

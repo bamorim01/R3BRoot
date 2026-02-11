@@ -26,9 +26,9 @@ void SetCuts()
     // or to message #5362 in the PandaRoot Forum >> Monte Carlo Engines >> g3Config.C thread)
     //
     // The default settings refer to a complete simulation which generates and follows also the secondary particles.
-
+    std::cout << ">>> SetCuts.C HAS BEEN EXECUTED <<<" << std::endl;
     TVirtualMC* MC = TVirtualMC::GetMC();
-
+    
     MC->SetProcess("PAIR", 1); /** pair production*/
     MC->SetProcess("COMP", 1); /**Compton scattering*/
     MC->SetProcess("PHOT", 1); /** photo electric effect */
@@ -43,7 +43,7 @@ void SetCuts()
     MC->SetProcess("MULS", 1); /**multiple scattering*/
 
     const Double_t cut1 = 1.0E-4; // GeV --> 100 keV
-    const Double_t cut2 = 1.0E-2; // GeV --> 10 MeV
+    const Double_t cut2 = 1.0E-7;//1.0E-2; // GeV --> 10 MeV
     const Double_t tofmax = 1.e1; // seconds
 
     MC->SetCut("CUTGAM", cut1);   /** gammas (GeV)*/
@@ -56,5 +56,6 @@ void SetCuts()
     MC->SetCut("DCUTE", cut2);    /** delta-rays by electrons (GeV)*/
     MC->SetCut("DCUTM", cut2);    /** delta-rays by muons (GeV)*/
     MC->SetCut("PPCUTM", cut2);   /** direct pair production by muons (GeV)*/
-    MC->SetCut("TOFMAX", tofmax); /**time of flight cut in seconds*/
+    MC->SetCut("TOFMAX", tofmax);
+    MC->DumpCutValues(); /**time of flight cut in seconds*/
 }

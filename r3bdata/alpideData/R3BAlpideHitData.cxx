@@ -40,12 +40,14 @@ R3BAlpideHitData::R3BAlpideHitData(uint16_t sensorId,
 
 std::string R3BAlpideHitData::toString() const
 {
-    return fmt::format("SensorID: {}, ClusterSize: {}, Xpos: {}, Ypos: {}, Zpos: {}",
+    return fmt::format("SensorID: {}, ClusterSize: {}, Xpos: {}, Ypos: {}, Zpos: {}, Xlocpos:{}, Ylocpos:{}",
                        GetSensorId(),
                        GetClusterSize(),
                        GetX(),
                        GetY(),
-                       GetZ());
+                       GetZ(),
+		       GetPosl(),
+		       GetPost());
 }
 
 void R3BAlpideHitData::Print(const Option_t*) const { std::cout << *this << std::endl; }

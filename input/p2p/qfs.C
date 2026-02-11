@@ -32,7 +32,7 @@ void run(TString fname)
     Zpdf->SetParameter (0,SLOPE);
     Zpdf->SetParameter(1,1);
     //------- Output tree ----------
-    TFile file("quasi.root", "RECREATE");
+    TFile file("quasi3.root", "RECREATE");
     TTree* tree = new TTree("tree", "Tree with simulated QFS kinematics");
 #include "info/tree.hh"
     //--------------------- Beam parameters -----------------------------
@@ -145,9 +145,16 @@ void run(TString fname)
         theta_2 = P2L.Theta();
         theta_B = PB.Theta();
 
-        phi_1 = P1L.Phi();
+//        if((abs(P1L.Phi() * TMath::RadToDeg()) > 80 && abs(P1L.Phi() * TMath::RadToDeg()) <95) || (abs(P2L.Phi()*TMath::RadToDeg()) > 80 && abs(P2L.Phi()*TMath::RadToDeg()) < 95)){
+		//continue;
+	//}
+	//else{
+	phi_1 = P1L.Phi();
         phi_2 = P2L.Phi();
         phi_B = PB.Phi();
+	//theta_1 = P1L.Theta();
+        //theta_2 = P2L.Theta();
+        //theta_B = PB.Theta();
 
         P1x = P1L.X();
         P1y = P1L.Y();
@@ -173,14 +180,14 @@ void run(TString fname)
                           cos(P1L.Theta()) * cos(P2L.Theta()));
 
         double df = fabs(phi_1 - phi_2);
-        //double Dif_phi;
+//        double Dif_phi;
 
         if (df > 0 && df <= PI)
             Dif_phi = df;
         else
             Dif_phi = 2 * PI - df;
 
-        // if(events%10000==0) cout<< events <<" of "<<MAX_STORY<<" ("<<(float)events/MAX_STORY*100<<"%)"<<endl;
+    //     if(events%10000==0) cout<< events <<" of "<<MAX_STORY<<" ("<<(float)events/MAX_STORY*100<<"%)"<<endl;
 	double Vx = r1.Gaus(MEANX,SIGMAX);
         double Vy = r1.Gaus(MEANY,SIGMAY);
 	double Vz = Zpdf->GetRandom()-0.75;

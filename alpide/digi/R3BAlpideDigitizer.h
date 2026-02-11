@@ -82,7 +82,7 @@ class R3BAlpideDigitizer : public FairTask
     R3BAlpideGeometry* fAlpideGeo;
 
     /** Private method AddHitData **/
-    R3BAlpideHitData* AddHitData(UInt_t sensorId, uint16_t clustersize, Double_t x, Double_t y, Double_t z = 0.0);
+    R3BAlpideHitData* AddHitData(UInt_t sensorId, uint16_t clustersize, Double_t x, Double_t y, Double_t z = 0.0, Double_t locx = 0.0, Double_t locy=0.0);
 
   public:
     // Class definition

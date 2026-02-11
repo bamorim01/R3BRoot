@@ -20,15 +20,15 @@
 #pragma link off all functions;
 
 #pragma link C++ class R3BAlpide+;
-#pragma link C++ class R3BDeadL+;
+
 #pragma link C++ class R3BAlpideDigitizer+;
-#pragma link C++ class R3BDeadLDigitizer+;
+
 #pragma link C++ class R3BAlpideContFact+;
 #pragma link C++ class R3BAlpideMappingPar+;
 #pragma link C++ class R3BAlpideNoisyPixels+;
 #pragma link C++ class R3BAlpideCluster+;
 #pragma link C++ class R3BAlpideGeometry+;
-#pragma link C++ class R3BDeadLGeometry+;
+
 
 #pragma link C++ class R3BAlpideMapped2Cal+;
 #pragma link C++ class R3BAlpideCal2Hit+;

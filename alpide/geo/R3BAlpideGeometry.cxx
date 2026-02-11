@@ -1,4 +1,4 @@
-/******************************************************************************
+ /******************************************************************************
  *   Copyright (C) 2019 GSI Helmholtzzentrum für Schwerionenforschung GmbH    *
  *   Copyright (C) 2019-2025 Members of R3B Collaboration                     *
  *                                                                            *
@@ -37,8 +37,8 @@ R3BAlpideGeometry* R3BAlpideGeometry::Instance()
 R3BAlpideGeometry::R3BAlpideGeometry()
     : TObject()
     , IsInitialize(kFALSE)
-    , fGeometryVersion(2024)
-    , fNbSensor(864)
+    , fGeometryVersion(2026)
+    , fNbSensor(972)
 {
 }
 
@@ -58,14 +58,14 @@ bool R3BAlpideGeometry::Init(Int_t version)
         case 2028:
             // Two barrels + one bending barrel
             geoPath += "target_area_alpide_barrels_bending_v28.geo.root";
-            fNbSensor = 363;
+            fNbSensor = 72;
             fGeometryVersion = version;
             break;
 
         case 2026:
             // Two barrels
             geoPath += "target_area_alpide_barrel_v26.geo.root";
-            fNbSensor = 888;//363;//500
+            fNbSensor = 972;//363;//500
             fGeometryVersion = version;
             break;
 
@@ -237,7 +237,7 @@ const TRotation R3BAlpideGeometry::GetRotation(Int_t iD)
 // Translation vector
 const TVector3& R3BAlpideGeometry::GetTranslation(Int_t iD)
 {
-    fNbSensor = 864;
+    fNbSensor = 972;
     static std::map<int, TVector3> cache;
     Double_t local[3] = { 0, 0, 0 };
     Double_t master[3];
@@ -278,7 +278,7 @@ const TVector3& R3BAlpideGeometry::GetTranslation(Int_t iD)
 
 void R3BAlpideGeometry::GetAngles(Int_t iD, Double_t* polar, Double_t* azimuthal, Double_t* rho)
 {
-    fNbSensor = 864;
+    fNbSensor = 972;
     auto& masterV = this->GetAngles(iD);
     *polar = masterV.Theta();
     *azimuthal = masterV.Phi();
@@ -298,47 +298,142 @@ const char* R3BAlpideGeometry::GetSensorVolumePath(Int_t iD)
     Int_t layertype = 0;
 
     R3BLOG(debug, "SensorId: " << iD);
-
+    std::cout<<"ID:"<<iD<<std::endl;
     if (iD >= 1 && iD <= fNbSensor)
     {
         if (fGeometryVersion == 2026 || fGeometryVersion == 2028)
         {
-            if (iD <= 432){
-		if (iD <= 216 )//153)//216)
+            if (iD < 486){
+		if (iD <= 216)//153)//216)
             	{
                		bartype = 1;
                		layertype = (iD - 1) / 9;
                 	sid = iD - layertype * 9;
                 	layertype++;
+		}
+		/*else if (72 < iD && iD <=180){
+                                std::cout<<"KETAMINE2"<<std::endl;
+                                bartype = 2;
+                                sid = iD - 73;//217;
+                                layertype = sid / 9;
+                                sid = iD - 72 - (layertype * 9);
+                                layertype++;
+
+                        
+
             	}
-            	else
+            	else if (180< iD && iD<= 252)
             	{
-			std::cout<<"KETAMINE"<<std::endl;
-                	bartype = 2;
-              	 	sid = iD - 217;//217;
-                	layertype = sid / 10;
-                	sid = iD - 216 - (layertype * 10);
-                	layertype++;
+			 bartype = 1;
+                        layertype = (iD - 180 - 1) / 9;
+                        sid = iD - 180 - layertype * 9 + 9;
+                        layertype++;
+
+		}*/	
+
+		else {
+
+				std::cout<<"KETAMINE3"<<std::endl;
+                                bartype = 2;
+                                sid = iD - (217);//217;
+                                layertype = sid / 9;
+                                sid = iD - (216) - (layertype * 9);
+                                layertype++;
+
+			
+
+
             	}
+
+	/*	else if (504 < iD && iD <= 756)
+		{
+
+			std::cout<<"KETAMINE2"<<std::endl;
+                        bartype = 3;
+                        sid = iD - 505;//217;
+                        layertype = sid / 9;
+                        sid = iD - 504 - (layertype * 9);
+                        layertype++;
+
+
+
+		}
+
+		else 
+                {
+                        std::cout<<"KETAMINE3"<<std::endl;
+                        bartype = 4;
+                        sid = iD - 757;//217;
+                        layertype = sid / 9;
+                        sid = iD - 756 - (layertype * 9);
+                        layertype++;
+                }*/
+
+
+
 	   }
 
-	   if (iD >= 432){
-                if (iD <= 648 )//153)//216)
-                {
-                        bartype = 1;
-                        layertype = (iD - 1) / 9;
-                        sid = iD - layertype * 9;
+	   if (iD >= 486){
+                if (iD <= 702)//153)//216)
+                {	
+			bartype = 1;
+                        layertype = (iD - 486 - 1) / 9;
+                        sid = iD - 486 - layertype * 9 + 9;
                         layertype++;
+		}
+
+
+	/*	else if (432< iD && iD<=540){
+
+			std::cout<<"KETAMINE"<<std::endl;
+                                bartype = 2;
+                                sid = iD - (73 + 360);//217;
+                                layertype = sid / 9;
+                                sid = iD - (72 + 360) - (layertype * 9) + 19;
+                                layertype++;
+
+			
+
                 }
-                else
+                else if (540<iD && iD<= 612)
+                {
+			bartype = 1;
+                        layertype = (iD - 360 -180 - 1) / 9;
+                        sid = iD - 180 - 360 - layertype * 9 + 29;
+                        layertype++;
+		}*/
+		else {
+
+				std::cout<<"KETAMINE"<<std::endl;
+                                bartype = 2;
+                                sid = iD - (217 + 486);//217;
+                                layertype = sid / 9;
+                                sid = iD - (216+ 486) - (layertype * 9) + 9;
+                                layertype++;
+                }
+
+	/*	else if (1512 < iD && iD <= 1764)
                 {
                         std::cout<<"KETAMINE"<<std::endl;
-                        bartype = 2;
-                        sid = iD - (217 + 432);//217;
-                        layertype = sid / 10;
-                        sid = iD - (216+432) - (layertype * 10);
+                        bartype = 3;
+                        sid = iD - (505 + 1008);//217;
+                        layertype = sid / 9;
+                        sid = iD - (504+1008) - (layertype * 9) + 9;
                         layertype++;
                 }
+
+		else
+                {
+                        std::cout<<"KETAMINE"<<std::endl;
+                        bartype = 4;
+                        sid = iD - (757 + 1008);//217;
+                        layertype = sid / 9;
+                        sid = iD - (756+1008) - (layertype * 9) + 9;
+                        layertype++;
+                }*/
+
+
+
            }
         }
         else
@@ -407,21 +502,153 @@ int R3BAlpideGeometry::GetSensorId(const char* volumePath)
     }
 
     barID = std::stoi(m[1].str());    // converting to int the barrel type
-    layerID = std::stoi(m[2].str());  // converting to int the layer type
-    alpideID = std::stoi(m[3].str()); // converting to int the alpide type
+    layerID = std::stoi(m[2].str());
+    std::cout<<"barrelID:"<<barID<<std::endl;
+    std::cout<<"layerID:"<<layerID<<std::endl;  // converting to int the layer type
+    alpideID = std::stoi(m[3].str());
+    std::cout<<"alpideID:"<<alpideID<<std::endl; // converting to int the alpide type
+    std::cout << "HERE" << std::endl;	    
 
     if (fGeometryVersion == 2026 || fGeometryVersion == 2028)
-    {	
-	 
+    {
+	 if (alpideID < 10){
+    std::cout << "HERE1" << std::endl;
+
+	/*	if (barID == 4)
+                {
+                        sensorId = (layerID - 1) * 9 + alpideID;
+                        sensorId += 756;
+        std::cout << "HERE3" << std::endl;          
+                }
+
+	    
+
+		if (barID == 3)
+                {
+                        sensorId = (layerID - 1) * 9 + alpideID;
+                        sensorId += 504;
+    	std::cout << "HERE3" << std::endl;	    
+                }*/
+
     	    	if (barID == 2)
         	{
-            		sensorId = (layerID - 1) * 10 + alpideID;
-            		sensorId += 432;
+            		sensorId = (layerID - 1) * 9 + alpideID;
+            		sensorId += 216;
         	}
-        	else
+        	if (barID == 1)
         	{
             		sensorId = (layerID - 1) * 9 + alpideID;
         	}
+
+	}
+
+/*	if (alpideID >= 10 && alpideID < 20){
+    std::cout << "HERE11" << std::endl;
+
+        /*      if (barID == 4)
+                {
+                        sensorId = (layerID - 1) * 9 + alpideID;
+                        sensorId += 756;
+        std::cout << "HERE3" << std::endl;          
+                }
+
+            
+
+                if (barID == 3)
+=                {
+                        sensorId = (layerID - 1) * 9 + alpideID;
+                        sensorId += 504;
+        std::cout << "HERE3" << std::endl;          
+                }
+
+                if (barID == 2)
+                {
+                        sensorId = (layerID - 1) * 9 + alpideID -9 + 180;
+                        sensorId += 72;
+                }
+                if (barID == 1)
+                {
+                        sensorId = (layerID - 1) * 9 + alpideID -9 + 180;
+                }
+
+        }
+
+
+	if (alpideID >= 20 && alpideID < 30) {	
+    std::cout << "HERE2" << std::endl;
+
+
+	/*	 if (barID == 4)
+                {
+                        sensorId = (layerID - 1) * 9 + alpideID - 9 + 1008;
+                        sensorId += 756;
+                        std::cout<<"Barrel ID: " << barID << ", multiflex ID: " << layerID << ", sensorID in multiflex: " << alpideID
+                         << ", sensorID: " << sensorId<<std::endl;
+                }  
+	    
+
+		if (barID == 3)
+                {
+                        sensorId = (layerID - 1) * 9 + alpideID - 9 + 1008;
+                        sensorId += 504;
+			std::cout<<"Barrel ID: " << barID << ", multiflex ID: " << layerID << ", sensorID in multiflex: " << alpideID
+                         << ", sensorID: " << sensorId<<std::endl;
+                }
+
+                if (barID == 2)
+                {
+                        sensorId = (layerID - 1) * 9 + alpideID - 19 + 360;
+                        sensorId += 72;
+			std::cout<<"Barrel ID: " << barID << ", multiflex ID: " << layerID << ", sensorID in multiflex: " << alpideID
+                         << ", sensorID: " << sensorId<<std::endl;
+                }
+                if (barID == 1)
+                {
+                        sensorId = (layerID - 1) * 9 + alpideID - 19 + 360;
+			std::cout<<"Barrel ID: " << barID << ", multiflex ID: " << layerID << ", sensorID in multiflex: " << alpideID
+                         << ", sensorID: " << sensorId<<std::endl;
+                }
+	}*/
+
+	 if (alpideID >= 10) {  
+    std::cout << "HERE22" << std::endl;
+
+
+        /*       if (barID == 4)
+                {
+                        sensorId = (layerID - 1) * 9 + alpideID - 9 + 1008;
+                        sensorId += 756;
+                        std::cout<<"Barrel ID: " << barID << ", multiflex ID: " << layerID << ", sensorID in multiflex: " << alpideID
+                         << ", sensorID: " << sensorId<<std::endl;
+                }  
+            
+
+                if (barID == 3)
+                {
+                        sensorId = (layerID - 1) * 9 + alpideID - 9 + 1008;
+                        sensorId += 504;
+                        std::cout<<"Barrel ID: " << barID << ", multiflex ID: " << layerID << ", sensorID in multiflex: " << alpideID
+                         << ", sensorID: " << sensorId<<std::endl;
+                }*/
+
+                if (barID == 2)
+                {
+                        sensorId = (layerID - 1) * 9 + alpideID - 9 + 486;
+                        sensorId += 216;
+                        std::cout<<"Barrel ID: " << barID << ", multiflex ID: " << layerID << ", sensorID in multiflex: " << alpideID
+                         << ", sensorID: " << sensorId<<std::endl;
+                }
+                if (barID == 1)
+                {
+                        sensorId = (layerID - 1) * 9 + alpideID - 9 + 486;
+                        std::cout<<"Barrel ID: " << barID << ", multiflex ID: " << layerID << ", sensorID in multiflex: " << alpideID
+                         << ", sensorID: " << sensorId<<std::endl;
+                }
+        }
+
+
+
+
     }
     else
     {
