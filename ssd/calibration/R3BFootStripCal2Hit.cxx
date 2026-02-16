@@ -454,7 +454,7 @@ TVector3 R3BFootStripCal2Hit::ComputeHitPosition(int i, double pos)
 
         master.Transform(det2lab);
 
-        master += TVector3(fOffsetX[i], fOffsetY[i], fDistTarget[i] * 10);
+        master += TVector3(fOffsetX[i], fOffsetY[i], fDistTarget[i]*10);
     }
 
     return master;
@@ -478,6 +478,10 @@ void R3BFootStripCal2Hit::Exec(Option_t* /*option*/)
     // If we have hit parameters, do eta correction and charge calibration
     if (fHit_Par)
         EtaCorrectionAndChargeCal();
+    
+    std::cout << "fThSum" <<fThSum << std::endl;
+    std::cout << "fMaxNumClusters" << fMaxNumClusters << std::endl;
+    std::cout << "fMaxNumStrips" << fMaxNumStrips << std::endl;
 
     // Filling HitData
     for (uint8_t i = 0; i < fMaxNumDet; i++)
@@ -486,10 +490,10 @@ void R3BFootStripCal2Hit::Exec(Option_t* /*option*/)
         {
             double pos = fFootSize * ClusterPos[i][j] / fNumStrips - fMiddle;
             TVector3 master = ComputeHitPosition(i, pos);
-
+	    
             if (ClusterESum[i][j] > fThSum && ClusterMult[i] < fMaxNumClusters && ClusterNStrip[i][j] < fMaxNumStrips)
             {
-
+		std::cout << i + 1 << std::endl;
                 AddHitData(i + 1,
                            ClusterMult[i],
                            pos,
@@ -501,6 +505,10 @@ void R3BFootStripCal2Hit::Exec(Option_t* /*option*/)
             }
             else
             {
+		std::cout << "ClusterESum[i][j]" <<ClusterESum[i][j]  << std::endl;
+		std::cout << "ClusterMult[i]" << ClusterMult[i] << std::endl;
+		std::cout << "ClusterNStrip[i][j]" << ClusterNStrip[i][j] << std::endl;
+
                 // If this cluster is not above threshold then shouldn't be taken into account for
                 // cluster multiplicity!!
                 ClusterMult[i]--;

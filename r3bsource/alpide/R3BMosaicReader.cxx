@@ -32,6 +32,7 @@ extern "C"
 #include "ext_data_client.h"
 #include "ext_h101_mosaic202402.h"
 #include "ext_h101_mosaic202506.h"
+
 }
 
 R3BMosaicReader::R3BMosaicReader(EXT_STR_h101_MOSAIC202402_onion* data, size_t offset)
@@ -40,6 +41,7 @@ R3BMosaicReader::R3BMosaicReader(EXT_STR_h101_MOSAIC202402_onion* data, size_t o
     , fNbMosaic(sizeof(fData2402->MOSAIC) / sizeof(fData2402->MOSAIC[0]))
     , fOffset(offset)
     , fArray(new TClonesArray("R3BAlpideMappedData"))
+    , fArray_TS(new TClonesArray("R3BWRData"))
 {
 }
 
@@ -52,6 +54,8 @@ R3BMosaicReader::R3BMosaicReader(EXT_STR_h101_MOSAIC202506_onion* data, size_t o
     , fVersion(UnpackerMosaicVersion::v202506)
 {
 }
+
+
 
 R3BMosaicReader::~R3BMosaicReader()
 {

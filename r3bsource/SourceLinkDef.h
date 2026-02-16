@@ -74,7 +74,7 @@
 #pragma link C++ class R3BFootSiReader+;
 #pragma link C++ class R3BAlpideReader+;
 #pragma link C++ class R3BHmpReader+;
-#pragma link C++ class R3BCalifaJulichReader+;
+//#pragma link C++ class R3BCalifaJulichReader+;
 #pragma link C++ class R3BRpcReader+;
 #pragma link C++ class R3BTwimReader+;
 #pragma link C++ class R3BTttxReader+;

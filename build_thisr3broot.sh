@@ -21,5 +21,5 @@ mkdir -p -v ../build
 cmake -S ./ -B ../build -DBUILD_GEOMETRY=OFF
 source ../build/config.sh
 cmake -S ./ -B ../build -DBUILD_GEOMETRY=ON
-cmake --build ../build -j9
+cmake --build ../build -j40
 

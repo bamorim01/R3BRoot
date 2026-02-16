@@ -254,7 +254,6 @@ void R3BFootMapped2StripCal::SetPedestals(Int_t thr, TString conf)
                                                (*h2)[iDet]->GetYaxis()->GetXmin(),
                                                (*h2)[iDet]->GetYaxis()->GetXmax() + 1);
 
-
         h2_clean->SetDirectory(0);
         for (int xbin = 1; xbin <= (*h2)[iDet]->GetNbinsX(); ++xbin)
         {

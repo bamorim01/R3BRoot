@@ -30,6 +30,9 @@ typedef struct EXT_STR_h101_MOSAIC202402_onion_t EXT_STR_h101_MOSAIC202402_onion
 struct EXT_STR_h101_MOSAIC202506_t;
 typedef struct EXT_STR_h101_MOSAIC202506_onion_t EXT_STR_h101_MOSAIC202506_onion;
 
+struct EXT_STR_h101_MOSAIC202507_t;
+typedef struct EXT_STR_h101_MOSAIC202507_onion_t EXT_STR_h101_MOSAIC202507_onion;
+
 class ext_data_struct_info;
 
 class R3BMosaicReader : public R3BReader
@@ -38,7 +41,7 @@ class R3BMosaicReader : public R3BReader
     // Standard constructor
     R3BMosaicReader(EXT_STR_h101_MOSAIC202402_onion*, size_t);
     R3BMosaicReader(EXT_STR_h101_MOSAIC202506_onion*, size_t);
-
+    R3BMosaicReader(EXT_STR_h101_MOSAIC202507_onion*, size_t);
     // Destructor
     virtual ~R3BMosaicReader();
 
@@ -75,11 +78,14 @@ class R3BMosaicReader : public R3BReader
     // Read data from G249 setup
     auto R3BRead202506() -> bool;
 
+    auto R3BRead202507() -> bool;
+
     // An event counter
     unsigned int fNEvent = 1;
     // Reader specific data structure from ucesb
     EXT_STR_h101_MOSAIC202402_onion* fData2402 = nullptr;
     EXT_STR_h101_MOSAIC202506_onion* fData2506 = nullptr;
+    EXT_STR_h101_MOSAIC202507_onion* fData2507 = nullptr;
     // Number of Mosaics
     int fNbMosaic = 1;
     // Data offset

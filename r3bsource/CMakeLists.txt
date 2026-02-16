@@ -93,7 +93,7 @@ set(SRCS
     tofi/R3BTofiReader.cxx
     pdc/R3BPdcReader.cxx
     califa/R3BCalifaFebexReader.cxx
-    califa/R3BCalifaJulichReader.cxx
+    #califa/R3BCalifaJulichReader.cxx
     tofd/R3BPtofReader.cxx
     neuland/R3BNeulandTamexReader.cxx
     neuland/R3BNeulandTacquilaReader.cxx
@@ -237,7 +237,7 @@ set(HEADERS
     tofi/R3BTofiReader.h
     pdc/R3BPdcReader.h
     califa/R3BCalifaFebexReader.h
-    califa/R3BCalifaJulichReader.h
+    #califa/R3BCalifaJulichReader.h
     tofd/R3BPtofReader.h
     neuland/R3BNeulandTamexReader.h
     neuland/R3BNeulandTacquilaReader.h
