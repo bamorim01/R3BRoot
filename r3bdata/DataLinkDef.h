@@ -54,6 +54,8 @@
 #pragma link C++ class R3BHmpMappedData+;
 #pragma link C++ class R3BPasMappedData+;
 #pragma link C++ class R3BPasCalData+;
+#pragma link C++ class R3BPasHitData+;
+#pragma link C++ class R3BPasCalData+;
 #pragma link C++ class R3BRpcMappedData+;
 #pragma link C++ class R3BRpcPreCalData+;
 #pragma link C++ class R3BRpcCalData+;
@@ -115,6 +117,8 @@
 #pragma link C++ class R3BNeulandCalData+;
 
 #pragma link C++ class R3BNeulosMappedData+;
+#pragma link C++ class R3BNeulosCalData+;
+#pragma link C++ class R3BNeulosHitData+;
 
 #pragma link C++ class R3BPspxMappedData+;
 #pragma link C++ class R3BPspxPrecalData+;
@@ -176,6 +180,8 @@
 #pragma link C++ class R3BFibPoint+;
 
 #pragma link C++ class R3BSfrsFibOneMappedData+;
+#pragma link C++ class R3BSfrsFibOneCalData+;
+#pragma link C++ class R3BSfrsFibOneHitData+;
 
 #pragma link C++ class R3BBeamMonitorMappedData+;
 #pragma link C++ class R3BSamplerMappedData+;

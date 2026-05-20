@@ -21,9 +21,9 @@ change_file_extension(*.cxx *.h HEADERS "${SRCS}")
 
 add_library_with_dictionary(
     LIBNAME
-    R3BSfrsFibOne
+    R3BNeulos
     LINKDEF
-    SfrsfibLinkDef.h
+    NeulosLinkDef.h
     HEADERS
     ${HEADERS}
     SRCS

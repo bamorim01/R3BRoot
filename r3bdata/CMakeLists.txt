@@ -85,7 +85,11 @@ set(SRCS
     neulandData/R3BNeulandTacquilaMappedData.cxx
     neulandData/R3BPaddleTamexMappedData.cxx
     neulosData/R3BNeulosMappedData.cxx
+    neulosData/R3BNeulosCalData.cxx
+    neulosData/R3BNeulosHitData.cxx
     pasData/R3BPasMappedData.cxx
+    pasData/R3BPasCalData.cxx
+    pasData/R3BPasHitData.cxx
     pasData/R3BPasCalData.cxx
     pdcData/R3BPdcCalData.cxx
     pdcData/R3BPdcHitData.cxx
@@ -119,6 +123,8 @@ set(SRCS
     sci8Data/R3BSci8HitData.cxx
     sci8Data/R3BSci8MappedData.cxx
     sfrsfiber/R3BSfrsFibOneMappedData.cxx
+    sfrsfiber/R3BSfrsFibOneCalData.cxx
+    sfrsfiber/R3BSfrsFibOneHitData.cxx
     synccheckData/R3BSyncCheckData.cxx
     tofData/R3BPaddleCalData.cxx
     tofData/R3BPtofHit.cxx
@@ -225,8 +231,11 @@ set(HEADERS
     neulandData/R3BNeulandTacquilaMappedData.h
     neulandData/R3BPaddleTamexMappedData.h
     neulosData/R3BNeulosMappedData.h
+    neulosData/R3BNeulosCalData.h
+    neulosData/R3BNeulosHitData.h
     pasData/R3BPasMappedData.h
     pasData/R3BPasCalData.h
+    pasData/R3BPasHitData.h
     pdcData/R3BPdcCalData.h
     pdcData/R3BPdcHitData.h
     pdcData/R3BPdcMappedData.h
@@ -259,6 +268,8 @@ set(HEADERS
     sci8Data/R3BSci8HitData.h
     sci8Data/R3BSci8MappedData.h
     sfrsfiber/R3BSfrsFibOneMappedData.h
+    sfrsfiber/R3BSfrsFibOneCalData.h
+    sfrsfiber/R3BSfrsFibOneHitData.h
     synccheckData/R3BSyncCheckData.h
     tofData/R3BPaddleCalData.h
     tofData/R3BPtofHit.h

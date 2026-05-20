@@ -19,10 +19,10 @@
 #pragma link off all classes;
 #pragma link off all functions;
 
-#pragma link C++ class R3BSfrsFibOne+;
+#pragma link C++ class R3BNeulos+;
 
-#pragma link C++ class R3BSfrsFibOneMapped2Cal+;
-#pragma link C++ class R3BSfrsFibOneCal2Hit+;
+#pragma link C++ class R3BNeulosMapped2Cal+;
+#pragma link C++ class R3BNeulosCal2Hit+;
 
 #endif
 

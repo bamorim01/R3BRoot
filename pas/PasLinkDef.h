@@ -22,6 +22,7 @@
 #pragma link C++ class R3BPas+;
 
 #pragma link C++ class R3BPasMapped2Cal+;
+#pragma link C++ class R3BPasCal2Hit+;
 
 #endif
 

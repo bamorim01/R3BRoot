@@ -5,12 +5,12 @@
 #include <iostream>
 #include <string>
 
-class R3BPasCalData : public TObject
+class R3BNeulosCalData : public TObject
 {
   public:
-    R3BPasCalData() = default;
+    R3BNeulosCalData() = default;
 
-    explicit R3BPasCalData(uint16_t side,
+    explicit R3BNeulosCalData(uint16_t side,
                           uint16_t type,
                           uint16_t channel,
                           double leadingTimeNs,
@@ -25,7 +25,7 @@ class R3BPasCalData : public TObject
     {
     }
 
-    virtual ~R3BPasCalData() = default;
+    virtual ~R3BNeulosCalData() = default;
 
     [[nodiscard]] uint16_t GetSide() const { return fSide; }
     [[nodiscard]] uint16_t GetType() const { return fType; }
@@ -50,7 +50,7 @@ class R3BPasCalData : public TObject
     double fTotNs = 0.;
 
   public:
-    ClassDefOverride(R3BPasCalData, 1)
+    ClassDefOverride(R3BNeulosCalData, 1)
 };
 
-std::ostream& operator<<(std::ostream& os, const R3BPasCalData& data);
+std::ostream& operator<<(std::ostream& os, const R3BNeulosCalData& data);
