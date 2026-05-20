@@ -69,7 +69,7 @@ class R3BAlpideMapped2Cal : public FairTask
     std::vector<std::vector<std::vector<int>>> inUseCache;
 
     // Private method AddCalData
-    R3BAlpideCalData* AddCalData(uint16_t senId, uint16_t row, uint16_t col);
+    R3BAlpideCalData* AddCalData(uint16_t senId,uint16_t strobe, uint16_t row, uint16_t col);
 
   public:
     // Class definition

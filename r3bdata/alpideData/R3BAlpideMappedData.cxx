@@ -21,12 +21,14 @@
 R3BAlpideMappedData::R3BAlpideMappedData(uint16_t senId,
                                          uint16_t reg,
                                          uint16_t ads,
+                                         uint16_t strobe,
                                          uint16_t chip,
                                          uint16_t row,
                                          uint16_t col)
     : fSenId(senId)
     , fReg(reg)
     , fAds(ads)
+    , fStrobe(strobe)
     , fChip(chip)
     , fRow(row)
     , fCol(col)
@@ -35,10 +37,11 @@ R3BAlpideMappedData::R3BAlpideMappedData(uint16_t senId,
 
 std::string R3BAlpideMappedData::toString() const
 {
-    return fmt::format("SensorID: {}, Region: {}, Address: {}, Chip: {}, Row: {}, Col: {}",
+    return fmt::format("SensorID: {}, Region: {}, Address: {},Strobe:{}, Chip: {}, Row: {}, Col: {}",
                        GetSensorId(),
                        GetReg(),
                        GetAds(),
+                       GetStrobe(),
                        GetChip(),
                        GetRow(),
                        GetCol());

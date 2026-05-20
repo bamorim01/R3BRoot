@@ -37,7 +37,8 @@ class R3BAlpideMappedData : public TObject
      *@param row      Row identifier
      *@param col      Column identifier
      **/
-    explicit R3BAlpideMappedData(uint16_t senId, uint16_t reg, uint16_t ads, uint16_t chip, uint16_t row, uint16_t col);
+    explicit R3BAlpideMappedData(uint16_t senId, uint16_t reg, uint16_t ads,uint16_t strobe, uint16_t chip, uint16_t row, uint16_t col);
+    //explicit R3BAlpideMappedData(uint16_t senId, uint16_t reg, uint16_t ads, uint16_t chip, uint16_t row, uint16_t col);
 
     // Destructor
     virtual ~R3BAlpideMappedData() = default;
@@ -49,6 +50,7 @@ class R3BAlpideMappedData : public TObject
     [[nodiscard]] inline const uint16_t GetChip() const { return fChip; }
     [[nodiscard]] inline const uint16_t GetRow() const { return fRow; }
     [[nodiscard]] inline const uint16_t GetCol() const { return fCol; }
+    [[nodiscard]] inline const uint16_t GetStrobe() const { return fStrobe; }
 
     // Support for printing
     [[nodiscard]] std::string toString() const;
@@ -61,7 +63,7 @@ class R3BAlpideMappedData : public TObject
     uint16_t fChip = 0;  // Chip identifier
     uint16_t fRow = 0;   // Row identifier from 1 to 512
     uint16_t fCol = 0;   // Column identifier from 1 to 1024
-
+    uint16_t fStrobe=0;  //Strobe number
   public:
     ClassDefOverride(R3BAlpideMappedData, 2)
 };

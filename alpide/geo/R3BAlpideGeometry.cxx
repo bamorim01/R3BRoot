@@ -62,6 +62,11 @@ bool R3BAlpideGeometry::Init(Int_t version)
             fGeometryVersion = version;
             break;
 
+	case 202606:
+		geoPath+="alpide_HIT202606.geo.root";
+		fNbSensor=25;
+		fGeometryVersion=version;
+
         case 2026:
             // Two barrels
             geoPath += "target_area_alpide_barrel_v26.geo.root";
@@ -295,6 +300,12 @@ const char* R3BAlpideGeometry::GetSensorVolumePath(Int_t iD)
 
     if (iD >= 1 && iD <= fNbSensor)
     {
+	    if (fGeometryVersion == 202606)
+	    {
+		    sprintf(nameVolume, "/cave_1/AlpideSensorWorld_0/Alpide_%i", iD);
+		    return nameVolume;
+	    }
+
         if (fGeometryVersion == 2026 || fGeometryVersion == 2028)
         {
             if (iD <= 153)
@@ -334,6 +345,12 @@ const char* R3BAlpideGeometry::GetSensorVolumePath(Int_t iD)
 
 int R3BAlpideGeometry::GetBarrelId(const char* volumePath)
 {
+
+
+if (fGeometryVersion == 202606)
+{
+    return 1;
+}
     Int_t barID = 0;
     static auto restr = "Multilayer_([0-9]+)_([0-9]+)/Alpide_([0-9]+)";
     static auto re = boost::regex(restr, boost::regex::extended);
@@ -358,12 +375,45 @@ int R3BAlpideGeometry::GetBarrelId(const char* volumePath)
 int R3BAlpideGeometry::GetSensorId(const char* volumePath)
 {
     Int_t sensorId = 0;
+
+
+if (fGeometryVersion == 202606)
+{
+    static auto simpleRestr = "Alpide_([0-9]+)";
+    static auto simpleRe = boost::regex(simpleRestr, boost::regex::extended);
+    boost::cmatch simpleMatch;
+
+    if (!boost::regex_search(volumePath, simpleMatch, simpleRe))
+    {
+        R3BLOG(error,
+               "\"" << volumePath
+                    << "\"\n"
+                       "does not match RE \""
+                    << simpleRestr << "\".\n");
+        return sensorId;
+    }
+
+    sensorId = std::stoi(simpleMatch[1].str());
+
+    if (sensorId < 1 || sensorId > fNbSensor)
+    {
+        R3BLOG(error, "Invalid sensorId decoded from path: " << sensorId);
+        return 0;
+    }
+
+    return sensorId;
+}
+
     Int_t barID = 0;
     Int_t layerID = 0;
     Int_t alpideID = 0;
     static auto restr = "Multilayer_([0-9]+)_([0-9]+)/Alpide_([0-9]+)";
     static auto re = boost::regex(restr, boost::regex::extended);
     boost::cmatch m;
+    
+
+
+
     if (!boost::regex_search(volumePath, m, re))
     {
         R3BLOG(error,

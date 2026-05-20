@@ -84,6 +84,8 @@ set(SRCS
     neulandData/R3BNeulandPoint.cxx
     neulandData/R3BNeulandTacquilaMappedData.cxx
     neulandData/R3BPaddleTamexMappedData.cxx
+    pasData/R3BPasMappedData.cxx
+    pasData/R3BPasCalData.cxx
     pdcData/R3BPdcCalData.cxx
     pdcData/R3BPdcHitData.cxx
     pdcData/R3BPdcMappedData.cxx
@@ -220,6 +222,8 @@ set(HEADERS
     neulandData/R3BNeulandPoint.h
     neulandData/R3BNeulandTacquilaMappedData.h
     neulandData/R3BPaddleTamexMappedData.h
+    pasData/R3BPasMappedData.h
+    pasData/R3BPasCalData.h
     pdcData/R3BPdcCalData.h
     pdcData/R3BPdcHitData.h
     pdcData/R3BPdcMappedData.h
@@ -304,6 +308,7 @@ set(DIRS
     musliData
     mwpcData
     neulandData
+    pasData
     pdcData
     pspData
     roluData

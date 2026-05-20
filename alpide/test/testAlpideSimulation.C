@@ -16,7 +16,7 @@
 #include <TSystem.h>
 #include <memory>
 
-void testAlpideSimulation(int nbevents = 100)
+void testAlpideSimulation(int nbevents = 10000)
 {
     // Timer
     TStopwatch timer;
@@ -45,11 +45,19 @@ void testAlpideSimulation(int nbevents = 100)
     run->SetSink(new FairRootFileSink(simufile));
 
     // Primary particle generator
-    auto boxGen = new FairBoxGenerator(2212, 8);
-    boxGen->SetXYZ(0, 0, 0.);
-    boxGen->SetThetaRange(7., 90.);
-    boxGen->SetPhiRange(0., 360.);
-    boxGen->SetEkinRange(0.2, 0.6);
+    
+  //  auto boxGen = new FairBoxGenerator(2212, 50);
+   auto boxGen = new FairIonGenerator(6,12,6, 1, 0., 0., 400, 0., 0., -200.);
+  boxGen->SetVertex(0,0,-200,1,1,0); 
+    //boxGen->SetXYZ(0, 0, -100.);
+   // boxGen->SetThetaRange(0, 10);
+   // boxGen->SetPhiRange(0., 360.);
+   // boxGen->SetEkinRange(0.2, 0.4);
+    
+  //auto boxGen=new  FairIonGenerator(1000060120, 1, 0,0,400, 0,0,-300);
+  // auto boxGen =new FairIonGenerator(2212, 1, 0,0,200, 0,0,-300);
+    
+    
     auto primGen = new FairPrimaryGenerator();
     primGen->AddGenerator(boxGen);
     run->SetGenerator(primGen);
@@ -60,12 +68,24 @@ void testAlpideSimulation(int nbevents = 100)
     run->AddModule(cave);
 
     // Geometry: Alpide
-    run->AddModule(new R3BAlpide("target_area_alpide_twoarms_v2023.1.geo.root", { 0., 0., 0. }));
+    run->AddModule(new R3BAlpide("alpide_HIT202606.geo.root", { 0., 0., 0. }));
+    auto rtdb = run->GetRuntimeDb();
+    // Ascii file
+    auto parIo = new FairParAsciiFileIo();
+    auto parList = new TList();
+    //parList->Add(new TObjString(pardir + "/alpide/alpide_mapping_v1.par"));
+    parList->Add(new TObjString("./alpide_mapping.hh"));
+    parIo->open(parList, "in");
+    rtdb->setFirstInput(parIo);
 
     // Digitizer: Alpide
     auto digi = new R3BAlpideDigitizer("Alpide");
     digi->SetLabframe();
-    run->AddTask(digi);
+ 
+digi->SetGeoVersion(202606);
+   run->AddTask(digi);
+
+
 
     // Init
     run->Init();

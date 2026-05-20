@@ -34,7 +34,7 @@ class R3BAlpideCalData : public TObject
      *@param col    Longitudinal position
      *@param row    Transverse position
      **/
-    explicit R3BAlpideCalData(uint16_t senId, uint16_t row, uint16_t col);
+    explicit R3BAlpideCalData(uint16_t senId,uint16_t strobe, uint16_t row, uint16_t col);
 
     // Destructor
     virtual ~R3BAlpideCalData() = default;
@@ -43,6 +43,7 @@ class R3BAlpideCalData : public TObject
     [[nodiscard]] inline const uint16_t GetSensorId() const { return fSenId; }
     [[nodiscard]] inline const uint16_t GetRow() const { return fRow; }
     [[nodiscard]] inline const uint16_t GetCol() const { return fCol; }
+    [[nodiscard]] inline const uint16_t GetStrobe() const { return fStrobe; }
 
     // Support for printing
     [[nodiscard]] std::string toString() const;
@@ -50,6 +51,7 @@ class R3BAlpideCalData : public TObject
 
   protected:
     uint16_t fSenId = 0;
+    uint16_t fStrobe = 0;
     uint16_t fRow = 0;
     uint16_t fCol = 0;
 

@@ -18,8 +18,9 @@
 #include "R3BAlpideCalData.h"
 #include <fmt/core.h>
 
-R3BAlpideCalData::R3BAlpideCalData(uint16_t senId, uint16_t row, uint16_t col)
+R3BAlpideCalData::R3BAlpideCalData(uint16_t senId,uint16_t strobe, uint16_t row, uint16_t col)
     : fSenId(senId)
+    , fStrobe(strobe)
     , fRow(row)
     , fCol(col)
 {
@@ -27,7 +28,7 @@ R3BAlpideCalData::R3BAlpideCalData(uint16_t senId, uint16_t row, uint16_t col)
 
 std::string R3BAlpideCalData::toString() const
 {
-    return fmt::format("SensorID: {}, Row: {}, Col: {}", GetSensorId(), GetRow(), GetCol());
+    return fmt::format("SensorID: {},Strobe: {}, Row: {}, Col: {}", GetSensorId(),GetStrobe(), GetRow(), GetCol());
 }
 
 void R3BAlpideCalData::Print(const Option_t*) const { std::cout << *this << std::endl; }

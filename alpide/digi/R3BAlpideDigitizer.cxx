@@ -15,7 +15,6 @@
 // -----         R3BAlpideDigitizer source file           -----
 // -----    Created 12/10/22 by J.L. Rodriguez Sanchez    -----
 // ------------------------------------------------------------
-
 #include "R3BAlpideDigitizer.h"
 #include "R3BAlpideGeometry.h"
 #include "R3BAlpideMappingPar.h"
@@ -81,6 +80,10 @@ void R3BAlpideDigitizer::SetParameter()
         fGeoversion = fMappingPar->GetGeoVersion();
         R3BLOG(info, "Geometry version: " << fGeoversion);
     }
+    else
+    {
+        R3BLOG(warn, "No alpideMappingPar available. Using current/default geometry version: " << fGeoversion);
+    }
 }
 
 // ----   Public method Init  -----------------------------------------
@@ -92,6 +95,8 @@ InitStatus R3BAlpideDigitizer::Init()
     R3BLOG_IF(fatal, !ioman, "FairRootManager not found.");
 
     fMCTrack = static_cast<TClonesArray*>(ioman->GetObject("MCTrack"));
+    R3BLOG_IF(fatal, !fMCTrack, "MCTrack not found.");
+
     fAlpidePoints = dynamic_cast<TClonesArray*>(ioman->GetObject(fName + "Point"));
     R3BLOG_IF(fatal, !fAlpidePoints, fName << "Point not found.");
 
@@ -111,29 +116,44 @@ InitStatus R3BAlpideDigitizer::Init()
 void R3BAlpideDigitizer::Exec(Option_t*)
 {
     Reset();
+
     // Reading the Input -- Point Data --
     Int_t nHits = fAlpidePoints->GetEntriesFast();
     if (nHits == 0)
     {
         return;
     }
+
     // Data from Point level
     R3BAlpidePoint** pointData = new R3BAlpidePoint*[nHits];
-    Int_t TrackId = 0, PID = 0;
-    Double_t x = 0., y = 0., z = 0.;
+    Int_t TrackId = 0;
+    Int_t PID = 0;
+    Double_t x = 0.;
+    Double_t y = 0.;
+    Double_t z = 0.;
     TVector3 vpos;
+
     for (Int_t i = 0; i < nHits; i++)
     {
         fRot.SetToIdentity();
         pointData[i] = dynamic_cast<R3BAlpidePoint*>(fAlpidePoints->At(i));
+        if (!pointData[i])
+        {
+            R3BLOG(error, "Invalid R3BAlpidePoint at index " << i);
+            continue;
+        }
+
         TrackId = pointData[i]->GetTrackID();
         auto sid = pointData[i]->GetSensorID();
 
         auto Track = dynamic_cast<R3BMCTrack*>(fMCTrack->At(TrackId));
+        if (!Track)
+        {
+            R3BLOG(error, "Invalid MCTrack for TrackId " << TrackId);
+            continue;
+        }
         PID = Track->GetPdgCode();
 
-        // if (PID > 1000080160) // Z=8 and A=16
-        // {
         Double_t fX_in = pointData[i]->GetXIn();
         Double_t fY_in = pointData[i]->GetYIn();
         Double_t fZ_in = pointData[i]->GetZIn();
@@ -150,35 +170,62 @@ void R3BAlpideDigitizer::Exec(Option_t*)
         TVector3 vtpos = (vpos - fTrans);
 
         fRot = fAlpideGeo->GetRotation(sid);
-        // std::cout <<"Rot "<< fRot.XX() <<" "<< fRot.XY() <<" "<< fRot.XZ() << std::endl;
-        // std::cout <<"Rot "<< fRot.YX() <<" "<< fRot.YY() <<" "<< fRot.YZ() << std::endl;
-        // std::cout <<"Rot "<< fRot.ZX() <<" "<< fRot.ZY() <<" "<< fRot.ZZ() << std::endl;
-
         TVector3 localpos = fRot.Inverse() * vtpos;
-        localpos.SetX(gRandom->Gaus(0., fsigma) + localpos.X());
-        localpos.SetZ(gRandom->Gaus(0., fsigma) + localpos.Z());
 
         auto eLoss = static_cast<double>(pointData[i]->GetEnergyLoss());
-
         auto fClusterSize = static_cast<uint16_t>(eLoss * pixelSizeFactor + pixelSizeOffset);
 
         if (fLabframe)
         {
-            // Lab frame
+            // Lab frame output, in mm.
+            // Apply resolution in the active local sensor plane before transforming back.
+            if (fGeoversion == 202606)
+            {
+                // New sensors-only geometry:
+                //   ALPIDE box dimensions are local x = 3 cm, local y = 1.5 cm, local z = thickness.
+                //   Therefore the active plane is local x-y.
+                localpos.SetX(gRandom->Gaus(0., fsigma) + localpos.X());
+                localpos.SetY(gRandom->Gaus(0., fsigma) + localpos.Y());
+            }
+            else
+            {
+                // Legacy geometries used the x-z local plane convention in this digitizer.
+                localpos.SetX(gRandom->Gaus(0., fsigma) + localpos.X());
+                localpos.SetZ(gRandom->Gaus(0., fsigma) + localpos.Z());
+            }
+
             TVector3 labpos = fRot * localpos + fTrans;
             AddHitData(sid, fClusterSize, labpos.X() * 10., labpos.Y() * 10., labpos.Z() * 10.); // mm
         }
         else
         {
-            // Sensor frame
-            AddHitData(sid, fClusterSize, localpos.Z() * 10., localpos.X() * 10.); // mm
+            // Sensor frame output, in mm.
+            if (fGeoversion == 202606)
+            {
+                // New sensors-only geometry:
+                //   active local sensor coordinates are x-y.
+                localpos.SetX(gRandom->Gaus(0., fsigma) + localpos.X());
+                localpos.SetY(gRandom->Gaus(0., fsigma) + localpos.Y());
+
+                AddHitData(sid, fClusterSize, localpos.X() * 10., localpos.Y() * 10.); // mm
+            }
+            else
+            {
+                // Legacy convention kept from the original code:
+                //   output coordinates were local z and local x.
+                localpos.SetX(gRandom->Gaus(0., fsigma) + localpos.X());
+                localpos.SetZ(gRandom->Gaus(0., fsigma) + localpos.Z());
+
+                AddHitData(sid, fClusterSize, localpos.Z() * 10., localpos.X() * 10.); // mm
+            }
         }
-        //}
     }
+
     if (pointData)
     {
         delete[] pointData;
     }
+
     R3BLOG(info, fAlpideHits->GetEntriesFast() << " points registered in this event");
     return;
 }
@@ -215,3 +262,4 @@ R3BAlpideHitData* R3BAlpideDigitizer::AddHitData(UInt_t sid, uint16_t clustersiz
 }
 
 ClassImp(R3BAlpideDigitizer)
+

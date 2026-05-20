@@ -1,22 +1,3 @@
-/******************************************************************************
- *   Copyright (C) 2019 GSI Helmholtzzentrum für Schwerionenforschung GmbH    *
- *   Copyright (C) 2022-2025 Members of R3B Collaboration                     *
- *                                                                            *
- *             This software is distributed under the terms of the            *
- *                 GNU General Public Licence (GPL) version 3,                *
- *                    copied verbatim in the file "LICENSE".                  *
- *                                                                            *
- * In applying this license GSI does not waive the privileges and immunities  *
- * granted to it by virtue of its status as an Intergovernmental Organization *
- * or submit itself to any jurisdiction.                                      *
- ******************************************************************************/
-
-// ------------------------------------------------------------
-// -----             R3BAlpideOnlineSpectra               -----
-// -----    Created 18/03/22 by J.L. Rodriguez-Sanchez    -----
-// -----          Fill Alpide online histograms           -----
-// ------------------------------------------------------------
-
 // ROOT headers
 #include <TCanvas.h>
 #include <TClonesArray.h>
@@ -25,8 +6,10 @@
 #include <TH1F.h>
 #include <TH2F.h>
 #include <THttpServer.h>
+#include <TLine.h>
 #include <TMath.h>
 #include <cmath>
+#include <vector>
 
 // FAIR headers
 #include <FairLogger.h>
@@ -43,6 +26,55 @@
 #include "R3BEventHeader.h"
 #include "R3BLogger.h"
 #include "R3BShared.h"
+
+namespace
+{
+Int_t GetAlpide202606Group(Int_t sensorId)
+{
+    // 202606 geometry:
+    //   group 0: Telescope 1, sensors 1--3
+    //   group 1: Linear module 1, sensors 4--12
+    //   group 2: Linear module 2, sensors 13--21
+    //   group 3: Telescope 2, sensors 22--24
+    //   group 4: Extra single sensor, sensor 25 = MOS9 chip 0
+    if (sensorId >= 1 && sensorId <= 3)
+        return 0;
+    if (sensorId >= 4 && sensorId <= 12)
+        return 1;
+    if (sensorId >= 13 && sensorId <= 21)
+        return 2;
+    if (sensorId >= 22 && sensorId <= 24)
+        return 3;
+    if (sensorId == 25)
+        return 4;
+
+    return -1;
+}
+
+const char* GetAlpide202606GroupName(Int_t group)
+{
+    static const char* names[5] = { "telescope1", "linear_module1", "linear_module2", "telescope2", "extra_sensor" };
+
+    if (group < 0 || group >= 5)
+        return "unknown";
+
+    return names[group];
+}
+
+const char* GetAlpide202606GroupTitle(Int_t group)
+{
+    static const char* titles[5] = { "Telescope 1, sensors 1--3",
+                                     "Linear module 1, sensors 4--12",
+                                     "Linear module 2, sensors 13--21",
+                                     "Telescope 2, sensors 22--24",
+                                     "Extra single sensor, sensor 25" };
+
+    if (group < 0 || group >= 5)
+        return "Unknown group";
+
+    return titles[group];
+}
+}
 
 // R3BAlpideOnlineSpectra::Default Constructor --------------------------
 R3BAlpideOnlineSpectra::R3BAlpideOnlineSpectra()
@@ -73,6 +105,7 @@ void R3BAlpideOnlineSpectra::SetParameter()
     {
         fNbSensors = fMap_Par->GetNbSensors();
         R3BLOG(info, "Nb of sensors: " << fNbSensors);
+        R3BLOG(info, "Geometry version: " << fMap_Par->GetGeoVersion());
     }
 }
 
@@ -100,20 +133,26 @@ InitStatus R3BAlpideOnlineSpectra::Init()
 
     // MAIN FOLDER-ALPIDE
     auto* mainfol = new TFolder("ALPIDE", "Alpide info");
-    // Folder for mapped data
     auto* mapfol = new TFolder("Map", "Map Alpide info");
-    // Folder for cal data
     auto* calfol = new TFolder("Cal", "Cal Alpide info");
-    // Folder for hit data
     auto* hitfol = new TFolder("Hit", "Hit Alpide info");
 
-    //
-    // Create histograms
-    //
     SetParameter();
 
-    auto* cMap = new TCanvas("Sensor_mapping", "Row vs Col per sensor", 10, 10, 500, 500);
-    cMap->Divide(3, fNbSensors / 3);
+    const Int_t geoVersion = fMap_Par ? fMap_Par->GetGeoVersion() : 0;
+    const Bool_t is202606 = (geoVersion == 202606);
+
+    if (is202606 && fNbSensors != 25)
+    {
+        R3BLOG(warn, "202606 online spectra expects 25 sensors, but mapping parameter gives " << fNbSensors);
+    }
+
+    // -------------------------------------------------------------------------
+    // Mapped spectra: one row/col map per sensor.
+    // -------------------------------------------------------------------------
+    auto* cMap = new TCanvas("Sensor_mapping", "Row vs Col per sensor", 10, 10, 1200, 900);
+    const Int_t nMapRows = (fNbSensors + 2) / 3; // round up fNbSensors / 3
+    cMap->Divide(3, nMapRows);
 
     for (int s = 0; s < fNbSensors; s++)
     {
@@ -132,21 +171,27 @@ InitStatus R3BAlpideOnlineSpectra::Init()
     mapfol->Add(cMap);
     mainfol->Add(mapfol);
 
+    // -------------------------------------------------------------------------
+    // Cal spectra.
+    // -------------------------------------------------------------------------
     if (fCalItems)
     {
         std::vector<TCanvas*> cCal;
-        auto nbc = fNbSensors / 6;
-        for (int s = 0; s < nbc; s++)
+        const Int_t sensorsPerCalCanvas = 6;
+        const Int_t nbc = (fNbSensors + sensorsPerCalCanvas - 1) / sensorsPerCalCanvas;
+
+        for (int c = 0; c < nbc; c++)
         {
-            std::string name = "Sensor_after_masking_flex_" + std::to_string(s + 1);
-            cCal.push_back(new TCanvas(name.c_str(), "Row vs Col per sensor", 10, 10, 500, 500));
-            cCal[s]->Divide(2, 6);
+            std::string name = "Sensor_after_masking_group_" + std::to_string(c + 1);
+            cCal.push_back(new TCanvas(name.c_str(), "Row vs Col and multiplicity per sensor", 10, 10, 900, 900));
+            cCal[c]->Divide(2, sensorsPerCalCanvas);
         }
 
         for (int s = 0; s < fNbSensors; s++)
         {
-            int canvas_index = s / 6;
-            int pad_index = 2 * (s % 6) + 1;
+            int canvas_index = s / sensorsPerCalCanvas;
+            int pad_index = 2 * (s % sensorsPerCalCanvas) + 1;
+
             std::string hist_name = "fh2_col_vs_row_cal_sensor_" + std::to_string(s + 1);
             std::string hist_title = "Col vs Row for sensor " + std::to_string(s + 1);
             fh2_ColVsRowCal.push_back(
@@ -173,6 +218,7 @@ InitStatus R3BAlpideOnlineSpectra::Init()
             cCal[canvas_index]->cd(pad_index);
             fh1_Calmult[s]->Draw();
         }
+
         for (const auto& c : cCal)
         {
             calfol->Add(c);
@@ -189,7 +235,7 @@ InitStatus R3BAlpideOnlineSpectra::Init()
         fh1_Calmult_total->SetLineColor(1);
         fh1_Calmult_total->SetFillColor(31);
 
-        cCalPixelSize = new TCanvas("SensorID_PixelSize", "", 10, 10, 500, 500);
+        cCalPixelSize = new TCanvas("SensorID_PixelSize", "Pixel multiplicity per sensor", 10, 10, 900, 600);
         fh2_sensor_pixelsize = R3B::root_owned<TH2F>("fh2_sensor_pixelsize",
                                                      "Pixel multiplicity per sensor",
                                                      fNbSensors + 2,
@@ -206,18 +252,40 @@ InitStatus R3BAlpideOnlineSpectra::Init()
         gPad->SetLogz();
         fh2_sensor_pixelsize->Draw("colz");
         fh2_sensor_pixelsize->SetStats(0);
-        for (size_t i_mosaic = 1; i_mosaic <= nbc; i_mosaic++)
+
+        if (is202606)
         {
-            auto l = new TLine(6 * i_mosaic + 0.5, 0, 6 * i_mosaic + 0.5, 69);
-            l->Draw("same");
-            l->SetLineStyle(7);
-            l->SetLineWidth(3);
-            l->SetLineColor(2);
+            // Draw boundaries after sensor groups:
+            // 1--3 | 4--12 | 13--21 | 22--24 | 25
+            const std::vector<Double_t> boundaries = { 3.5, 12.5, 21.5, 24.5 };
+            for (auto boundary : boundaries)
+            {
+                auto* l = new TLine(boundary, 0, boundary, 69);
+                l->Draw("same");
+                l->SetLineStyle(7);
+                l->SetLineWidth(3);
+                l->SetLineColor(2);
+            }
         }
+        else
+        {
+            for (Int_t i_mosaic = 1; i_mosaic <= nbc; i_mosaic++)
+            {
+                auto* l = new TLine(sensorsPerCalCanvas * i_mosaic + 0.5, 0, sensorsPerCalCanvas * i_mosaic + 0.5, 69);
+                l->Draw("same");
+                l->SetLineStyle(7);
+                l->SetLineWidth(3);
+                l->SetLineColor(2);
+            }
+        }
+
         mainfol->Add(fh1_Calmult_total);
         mainfol->Add(cCalPixelSize);
     }
 
+    // -------------------------------------------------------------------------
+    // Hit spectra.
+    // -------------------------------------------------------------------------
     if (fHitItems)
     {
         char Name1[255];
@@ -225,16 +293,18 @@ InitStatus R3BAlpideOnlineSpectra::Init()
         fh1_Clustermult.resize(fNbSensors);
         fh1_Clustersize.resize(fNbSensors);
         fh2_PosHit.resize(fNbSensors);
+
         for (int s = 0; s < fNbSensors; s++)
         {
             sprintf(Name1, "Cluster_size_sensor_%d", s + 1);
-            auto* cHit = new TCanvas(Name1, "cal info", 10, 10, 500, 500);
+            auto* cHit = new TCanvas(Name1, "hit info", 10, 10, 800, 400);
             cHit->Divide(2, 1);
+
             sprintf(Name1, "fh2_pos_hit_sensor_%d", s + 1);
             sprintf(Name2, "Hit-position for sensor: %d", s + 1);
-            fh2_PosHit[s] = R3B::root_owned<TH2F>(Name1, Name2, 200, 0, 30., 100, 0, 15.);
-            fh2_PosHit[s]->GetXaxis()->SetTitle("Posl [mm]");
-            fh2_PosHit[s]->GetYaxis()->SetTitle("Post [mm]");
+            fh2_PosHit[s] = R3B::root_owned<TH2F>(Name1, Name2, 200, -20., 40., 120, -20., 20.);
+            fh2_PosHit[s]->GetXaxis()->SetTitle("Local X / Posl [mm]");
+            fh2_PosHit[s]->GetYaxis()->SetTitle("Local Y / Post [mm]");
             fh2_PosHit[s]->GetYaxis()->SetTitleOffset(1.1);
             fh2_PosHit[s]->GetXaxis()->CenterTitle(true);
             fh2_PosHit[s]->GetYaxis()->CenterTitle(true);
@@ -256,7 +326,7 @@ InitStatus R3BAlpideOnlineSpectra::Init()
             hitfol->Add(cHit);
 
             sprintf(Name1, "Cluster_multiplicity_sensor_%d", s + 1);
-            auto cHitm = new TCanvas(Name1, "cal info", 10, 10, 500, 500);
+            auto* cHitm = new TCanvas(Name1, "cluster multiplicity", 10, 10, 500, 500);
             sprintf(Name1, "fh1_cluster_multiplicity_sensor_%d", s + 1);
             sprintf(Name2, "Cluster_multiplicity for sensor: %d", s + 1);
             fh1_Clustermult[s] = R3B::root_owned<TH1F>(Name1, Name2, 60, 0, 60);
@@ -272,7 +342,7 @@ InitStatus R3BAlpideOnlineSpectra::Init()
             hitfol->Add(cHitm);
         }
 
-        auto cHitmTot = new TCanvas("Cluster_multiplicity_total", "mult hit info", 10, 10, 500, 500);
+        auto* cHitmTot = new TCanvas("Cluster_multiplicity_total", "mult hit info", 10, 10, 500, 500);
         fh1_Clustermult_total =
             R3B::root_owned<TH1F>("Cluster_multiplicity_total", "Total cluster multiplicity", 60, 0, 60);
         fh1_Clustermult_total->GetXaxis()->SetTitle("Cluster multiplicity");
@@ -286,9 +356,9 @@ InitStatus R3BAlpideOnlineSpectra::Init()
         fh1_Clustermult_total->Draw();
         hitfol->Add(cHitmTot);
 
-        auto cSizemTot = new TCanvas("Size_multiplicity_total", "size hit info", 10, 10, 500, 500);
-        fh1_Clustersize_total = R3B::root_owned<TH1F>("Size_multiplicity_total", "Total size multiplicity", 60, 0, 60);
-        fh1_Clustersize_total->GetXaxis()->SetTitle("Size multiplicity");
+        auto* cSizemTot = new TCanvas("Size_multiplicity_total", "size hit info", 10, 10, 500, 500);
+        fh1_Clustersize_total = R3B::root_owned<TH1F>("Size_multiplicity_total", "Total size multiplicity", 160, 0, 160);
+        fh1_Clustersize_total->GetXaxis()->SetTitle("Cluster size [pixels]");
         fh1_Clustersize_total->GetYaxis()->SetTitle("Counts");
         fh1_Clustersize_total->GetYaxis()->SetTitleOffset(1.1);
         fh1_Clustersize_total->GetXaxis()->CenterTitle(true);
@@ -312,11 +382,39 @@ InitStatus R3BAlpideOnlineSpectra::Init()
         fh2_theta_phi->Draw("colz");
         fh2_theta_phi->SetStats(0);
 
-        // mainfol->Add(cHit_angcor);
+        auto* cHit_xy = new TCanvas("Y_vs_X", "Correlation Y vs X in mm", 10, 10, 1200, 800);
 
-        auto cHit_xy = new TCanvas("Y_vs_X", "Correlation Y vs X in mm", 10, 10, 500, 500);
+        if (is202606)
+        {
+            cHit_xy->Divide(3, 2);
 
-        if (fMap_Par->GetGeoVersion() == 202505)
+            for (Int_t group = 0; group < 5; group++)
+            {
+                cHit_xy->cd(group + 1);
+
+                std::string histName = std::string("fh2_y_x_") + GetAlpide202606GroupName(group);
+                std::string histTitle = std::string("Hit Y vs X, ") + GetAlpide202606GroupTitle(group);
+
+                fh2_y_x.push_back(
+                    R3B::root_owned<TH2F>(histName.c_str(), histTitle.c_str(), 400, -40., 40., 240, -20., 20.));
+
+                fh2_y_x[group]->GetXaxis()->SetTitle("X [mm]");
+                fh2_y_x[group]->GetYaxis()->SetTitle("Y [mm]");
+                fh2_y_x[group]->GetYaxis()->SetTitleOffset(1.1);
+                fh2_y_x[group]->GetXaxis()->CenterTitle(true);
+                fh2_y_x[group]->GetYaxis()->CenterTitle(true);
+                gPad->SetLogz();
+                fh2_y_x[group]->Draw("colz");
+            }
+
+            mainfol->Add(cHit_xy);
+
+            auto* cHit_xy_cor_202606 =
+                new TCanvas("Y_vs_X_202606_summary", "202606 group hit maps", 10, 10, 1200, 800);
+            cHit_xy_cor_202606->Divide(3, 2);
+            mainfol->Add(cHit_xy_cor_202606);
+        }
+        else if (fMap_Par->GetGeoVersion() == 202505)
         {
             fh2_y_x.push_back(R3B::root_owned<TH2F>("fh2_y_x", "Correlation Y vs X in mm", 400, -50, 50, 380, -70, 70));
             fh2_y_x[0]->GetXaxis()->SetTitle("Wix <--   X [mm]   --> Messel");
@@ -326,7 +424,6 @@ InitStatus R3BAlpideOnlineSpectra::Init()
             fh2_y_x[0]->GetYaxis()->CenterTitle(true);
             gPad->SetLogz();
             fh2_y_x[0]->Draw("colz");
-            // fh2_y_x[0]->SetStats(0);
             mainfol->Add(cHit_xy);
         }
         else
@@ -342,7 +439,7 @@ InitStatus R3BAlpideOnlineSpectra::Init()
             fh2_y_x[0]->GetYaxis()->CenterTitle(true);
             gPad->SetLogz();
             fh2_y_x[0]->Draw("colz");
-            // fh2_y_x[0]->SetStats(0);
+
             cHit_xy->cd(2);
             fh2_y_x.push_back(R3B::root_owned<TH2F>(
                 "fh2_y_x_flex2", "Correlation Y vs X in mm for flex-2", 500, -50, 50, 200, -20, 20));
@@ -353,10 +450,9 @@ InitStatus R3BAlpideOnlineSpectra::Init()
             fh2_y_x[1]->GetYaxis()->CenterTitle(true);
             gPad->SetLogz();
             fh2_y_x[1]->Draw("colz");
-            // fh2_y_x[1]->SetStats(0);
             mainfol->Add(cHit_xy);
 
-            auto cHit_xy_cor =
+            auto* cHit_xy_cor =
                 new TCanvas("Y_vs_X_flex_cor", "Position correlations between flex-PCBs", 10, 10, 500, 500);
             cHit_xy_cor->Divide(2, 2);
             cHit_xy_cor->cd(1);
@@ -369,7 +465,6 @@ InitStatus R3BAlpideOnlineSpectra::Init()
             fh2_y_x_cor_det[0]->GetYaxis()->CenterTitle(true);
             gPad->SetLogz();
             fh2_y_x_cor_det[0]->Draw("colz");
-            // fh2_y_x_cor_det[0]->SetStats(0);
 
             cHit_xy_cor->cd(2);
             fh2_y_x_cor_det.push_back(
@@ -381,7 +476,6 @@ InitStatus R3BAlpideOnlineSpectra::Init()
             fh2_y_x_cor_det[1]->GetYaxis()->CenterTitle(true);
             gPad->SetLogz();
             fh2_y_x_cor_det[1]->Draw("colz");
-            // fh2_y_x_cor_det[1]->SetStats(0);
 
             cHit_xy_cor->cd(3);
             fh2_y_x_cor_det.push_back(
@@ -393,7 +487,6 @@ InitStatus R3BAlpideOnlineSpectra::Init()
             fh2_y_x_cor_det[2]->GetYaxis()->CenterTitle(true);
             gPad->SetLogz();
             fh2_y_x_cor_det[2]->Draw("colz");
-            // fh2_y_x_cor_det[2]->SetStats(0);
 
             cHit_xy_cor->cd(4);
             fh2_y_x_cor_det.push_back(
@@ -405,10 +498,9 @@ InitStatus R3BAlpideOnlineSpectra::Init()
             fh2_y_x_cor_det[3]->GetYaxis()->CenterTitle(true);
             gPad->SetLogz();
             fh2_y_x_cor_det[3]->Draw("colz");
-            // fh2_y_x_cor_det[3]->SetStats(0);
             mainfol->Add(cHit_xy_cor);
 
-            auto cHit_cluster =
+            auto* cHit_cluster =
                 new TCanvas("Cluster_correlations", "Cluster size correlations between flex-PCBs", 10, 10, 500, 500);
             fh2_max_clusters =
                 R3B::root_owned<TH2F>("fh2_max_clusters", "Correlation max. clusters", 70, 0, 70, 70, 0, 70);
@@ -423,6 +515,7 @@ InitStatus R3BAlpideOnlineSpectra::Init()
             mainfol->Add(cHit_cluster);
         }
     }
+
     run->AddObject(mainfol);
 
     // Register command to reset histograms
@@ -447,7 +540,8 @@ void R3BAlpideOnlineSpectra::Reset_Histo()
     {
         for (const auto& hist : fh2_ColVsRow)
         {
-            hist->Reset();
+            if (hist)
+                hist->Reset();
         }
     }
 
@@ -455,48 +549,56 @@ void R3BAlpideOnlineSpectra::Reset_Histo()
     {
         for (const auto& hist : fh2_ColVsRowCal)
         {
-            hist->Reset();
+            if (hist)
+                hist->Reset();
         }
         for (const auto& hist : fh1_Calmult)
         {
-            hist->Reset();
+            if (hist)
+                hist->Reset();
         }
-        fh1_Calmult_total->Reset();
-        fh2_sensor_pixelsize->Reset();
+        if (fh1_Calmult_total)
+            fh1_Calmult_total->Reset();
+        if (fh2_sensor_pixelsize)
+            fh2_sensor_pixelsize->Reset();
     }
 
     if (fHitItems)
     {
         for (const auto& hist : fh1_Clustermult)
         {
-            hist->Reset();
+            if (hist)
+                hist->Reset();
         }
         for (const auto& hist : fh1_Clustersize)
         {
-            hist->Reset();
+            if (hist)
+                hist->Reset();
         }
         for (const auto& hist : fh2_PosHit)
         {
-            hist->Reset();
+            if (hist)
+                hist->Reset();
         }
         for (const auto& hist : fh2_y_x)
         {
-            hist->Reset();
+            if (hist)
+                hist->Reset();
         }
         for (const auto& hist : fh2_y_x_cor_det)
         {
-            hist->Reset();
+            if (hist)
+                hist->Reset();
         }
 
-        fh2_theta_phi->Reset();
-        fh2_max_clusters->Reset();
-
-        for (auto& hist : fh2_y_x)
-        {
-            hist->Reset();
-        }
-        fh1_Clustermult_total->Reset();
-        fh1_Clustersize_total->Reset();
+        if (fh2_theta_phi)
+            fh2_theta_phi->Reset();
+        if (fh2_max_clusters)
+            fh2_max_clusters->Reset();
+        if (fh1_Clustermult_total)
+            fh1_Clustermult_total->Reset();
+        if (fh1_Clustersize_total)
+            fh1_Clustersize_total->Reset();
     }
 
     return;
@@ -504,7 +606,7 @@ void R3BAlpideOnlineSpectra::Reset_Histo()
 
 void R3BAlpideOnlineSpectra::Exec(Option_t* /*option*/)
 {
-    // Check for requested trigger (Todo: should be done globally / somewhere else)
+    // Check for requested trigger.
     if ((fTrigger >= 0) && (header != nullptr) && (header->GetTrigger() != fTrigger))
         return;
 
@@ -524,6 +626,9 @@ void R3BAlpideOnlineSpectra::Exec(Option_t* /*option*/)
         }
     }
 
+    const Int_t geoVersion = fMap_Par ? fMap_Par->GetGeoVersion() : 0;
+    const Bool_t is202606 = (geoVersion == 202606);
+
     // Fill mapped data
     if (fMappedItems && fMappedItems->GetEntriesFast() > 0)
     {
@@ -533,8 +638,15 @@ void R3BAlpideOnlineSpectra::Exec(Option_t* /*option*/)
             auto hit = dynamic_cast<R3BAlpideMappedData*>(fMappedItems->At(ihit));
             if (!hit)
                 continue;
-            //	    std::cout << hit->GetSensorId() << std::endl;
-            fh2_ColVsRow[hit->GetSensorId() - 1]->Fill(hit->GetCol(), hit->GetRow());
+
+            const Int_t sensorId = hit->GetSensorId();
+            if (sensorId < 1 || sensorId > fNbSensors)
+            {
+                R3BLOG(error, "Mapped hit with invalid sensor ID: " << sensorId);
+                continue;
+            }
+
+            fh2_ColVsRow[sensorId - 1]->Fill(hit->GetCol(), hit->GetRow());
         }
     }
 
@@ -550,19 +662,28 @@ void R3BAlpideOnlineSpectra::Exec(Option_t* /*option*/)
                 auto hit = dynamic_cast<R3BAlpideCalData*>(fCalItems->At(ihit));
                 if (!hit)
                     continue;
-                auto senid = hit->GetSensorId() - 1;
-                if (senid < 0)
+
+                const Int_t sensorId = hit->GetSensorId();
+                if (sensorId < 1 || sensorId > fNbSensors)
+                {
+                    R3BLOG(error, "Cal hit with invalid sensor ID: " << sensorId);
                     continue;
+                }
+
+                const Int_t senid = sensorId - 1;
                 fh2_ColVsRowCal[senid]->Fill(hit->GetCol(), hit->GetRow());
                 mult[senid]++;
             }
-            for (size_t s = 0; s < fNbSensors; s++)
+
+            for (size_t s = 0; s < static_cast<size_t>(fNbSensors); s++)
+            {
                 if (mult[s] > 0)
                 {
                     fh1_Calmult[s]->Fill(mult[s]);
                     fh1_Calmult_total->Fill(mult[s]);
                     fh2_sensor_pixelsize->Fill(s + 0.5, mult[s]);
                 }
+            }
         }
     }
 
@@ -576,17 +697,40 @@ void R3BAlpideOnlineSpectra::Exec(Option_t* /*option*/)
         std::vector<double> y_max(2, NAN);
         std::vector<int> cls_size(2, 0);
 
-        fh1_Clustermult_total->Fill(nHits);
+        if (fh1_Clustermult_total)
+            fh1_Clustermult_total->Fill(nHits);
+
         for (size_t ihit = 0; ihit < nHits; ihit++)
         {
             auto hit = dynamic_cast<R3BAlpideHitData*>(fHitItems->At(ihit));
             if (!hit)
                 continue;
-            auto senid = hit->GetSensorId() - 1;
+
+            const Int_t sensorId = hit->GetSensorId();
+            if (sensorId < 1 || sensorId > fNbSensors)
+            {
+                R3BLOG(error, "Hit with invalid sensor ID: " << sensorId);
+                continue;
+            }
+
+            const Int_t senid = sensorId - 1;
             fh1_Clustersize[senid]->Fill(hit->GetClusterSize());
             fh2_PosHit[senid]->Fill(hit->GetPosl(), hit->GetPost());
             fh1_Clustersize_total->Fill(hit->GetClusterSize());
-            if (fMap_Par->GetGeoVersion() == 202505)
+
+            if (is202606)
+            {
+                const Int_t group = GetAlpide202606Group(sensorId);
+                if (group >= 0 && group < static_cast<Int_t>(fh2_y_x.size()))
+                {
+                    fh2_y_x[group]->Fill(hit->GetX(), hit->GetY());
+                }
+                else
+                {
+                    R3BLOG(error, "202606 hit with unmapped sensor group: sensor " << sensorId);
+                }
+            }
+            else if (fMap_Par->GetGeoVersion() == 202505)
             {
                 fh2_theta_phi->Fill(hit->GetPhi() * TMath::RadToDeg(), hit->GetTheta() * TMath::RadToDeg());
                 fh2_y_x[0]->Fill(hit->GetX(), hit->GetY());
@@ -617,11 +761,14 @@ void R3BAlpideOnlineSpectra::Exec(Option_t* /*option*/)
 
             mult[senid]++;
         }
-        for (size_t s = 0; s < fNbSensors; s++)
+
+        for (size_t s = 0; s < static_cast<size_t>(fNbSensors); s++)
+        {
             if (mult[s] > 0)
                 fh1_Clustermult[s]->Fill(mult[s]);
+        }
 
-        if (fMap_Par->GetGeoVersion() == 202506)
+        if (!is202606 && fMap_Par->GetGeoVersion() == 202506)
         {
             if (std::isfinite(x_max[0]) && std::isfinite(x_max[1]))
                 fh2_y_x_cor_det[0]->Fill(x_max[0], x_max[1]);
@@ -635,10 +782,11 @@ void R3BAlpideOnlineSpectra::Exec(Option_t* /*option*/)
             if (std::isfinite(x_max[1]) && std::isfinite(y_max[0]))
                 fh2_y_x_cor_det[3]->Fill(x_max[1], y_max[0]);
 
-            if (cls_size[0] > 0 && cls_size[1] > 0)
+            if (cls_size[0] > 0 && cls_size[1] > 0 && fh2_max_clusters)
                 fh2_max_clusters->Fill(cls_size[0], cls_size[1]);
         }
     }
+
     fNEvents++;
     return;
 }
@@ -664,38 +812,53 @@ void R3BAlpideOnlineSpectra::FinishTask()
 {
     for (const auto& hist : fh2_ColVsRow)
     {
-        hist->Write();
+        if (hist)
+            hist->Write();
     }
 
     if (fCalItems)
     {
         for (const auto& hist : fh2_ColVsRowCal)
         {
-            hist->Write();
+            if (hist)
+                hist->Write();
         }
         for (const auto& hist : fh1_Calmult)
         {
-            hist->Write();
+            if (hist)
+                hist->Write();
         }
-        fh1_Calmult_total->Write();
-        fh2_sensor_pixelsize->Write();
+        if (fh1_Calmult_total)
+            fh1_Calmult_total->Write();
+        if (fh2_sensor_pixelsize)
+            fh2_sensor_pixelsize->Write();
     }
+
     if (fHitItems)
     {
-        fh2_theta_phi->Write();
+        if (fh2_theta_phi)
+            fh2_theta_phi->Write();
 
-        fh2_max_clusters->Write();
+        if (fh2_max_clusters)
+            fh2_max_clusters->Write();
+
         for (const auto& hist : fh2_y_x)
         {
-            hist->Write();
+            if (hist)
+                hist->Write();
         }
         for (const auto& hist : fh2_y_x_cor_det)
         {
-            hist->Write();
+            if (hist)
+                hist->Write();
         }
 
-        fh1_Clustermult_total->Write();
-        fh1_Clustersize_total->Write();
+        if (fh1_Clustermult_total)
+            fh1_Clustermult_total->Write();
+        if (fh1_Clustersize_total)
+            fh1_Clustersize_total->Write();
     }
 }
+
 ClassImp(R3BAlpideOnlineSpectra)
+

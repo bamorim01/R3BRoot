@@ -112,7 +112,8 @@ Bool_t R3BAlpideReader::R3BRead()
                 new ((*fArray)[fArray->GetEntriesFast()]) R3BAlpideMappedData(d + 1,
                                                                               fData->ALPIDE[d].REGIONv[r],
                                                                               fData->ALPIDE[d].ADDRESSv[r],
-                                                                              fData->ALPIDE[d].CHIPv[r],
+									      0,
+									      fData->ALPIDE[d].CHIPv[r],
                                                                               fData->ALPIDE[d].ROWv[r],
                                                                               fData->ALPIDE[d].COLv[r]);
             }

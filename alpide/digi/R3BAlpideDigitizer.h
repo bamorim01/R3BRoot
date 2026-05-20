@@ -15,7 +15,6 @@
 // -----          R3BAlpideDigitizer source file            -----
 // -----    Created 12/10/22 by J.L. Rodriguez Sanchez      -----
 // --------------------------------------------------------------
-
 #pragma once
 
 #include <FairTask.h>
@@ -63,6 +62,9 @@ class R3BAlpideDigitizer : public FairTask
 
     /** Setter for Lab. frame **/
     void SetLabframe() { fLabframe = true; }
+
+    /** Setter for geometry version **/
+    void SetGeoVersion(Int_t version) { fGeoversion = version; }
 
   private:
     void SetParameter();

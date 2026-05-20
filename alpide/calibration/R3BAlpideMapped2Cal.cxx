@@ -142,9 +142,10 @@ void R3BAlpideMapped2Cal::Exec(Option_t*)
             auto col = mappedData->GetCol();
             auto row = mappedData->GetRow();
             // std::cout << det <<" "<< col <<" "<< row <<std::endl;
+	    auto strobe=mappedData->GetStrobe();
             if (inUseCache[sen - 1][col][row] == 1) // this should be 1-base
             {
-                AddCalData(sen, row, col);
+                AddCalData(sen,strobe, row, col);
             }
         }
     }
@@ -162,12 +163,12 @@ void R3BAlpideMapped2Cal::Reset()
 }
 
 // -----   Private method AddCalData  --------------------------------------------
-R3BAlpideCalData* R3BAlpideMapped2Cal::AddCalData(uint16_t senId, uint16_t row, uint16_t col)
+R3BAlpideCalData* R3BAlpideMapped2Cal::AddCalData(uint16_t senId,uint16_t strobe, uint16_t row, uint16_t col)
 {
     // It fills the R3BAlpideCalData
     TClonesArray& clref = *fAlpideCalData;
     auto size = clref.GetEntriesFast();
-    return new (clref[size]) R3BAlpideCalData(senId, row, col);
+    return new (clref[size]) R3BAlpideCalData(senId,strobe, row, col);
 }
 
 ClassImp(R3BAlpideMapped2Cal)

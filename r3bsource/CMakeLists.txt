@@ -32,6 +32,7 @@ set(INCLUDE_DIRECTORIES
     musli
     mwpc
     neuland
+    pas
     pdc
     pspx
     rolu
@@ -92,6 +93,7 @@ set(SRCS
     tofd/R3BTofdReader.cxx
     tofi/R3BTofiReader.cxx
     pdc/R3BPdcReader.cxx
+    pas/R3BPasReader.cxx
     califa/R3BCalifaFebexReader.cxx
     califa/R3BCalifaJulichReader.cxx
     tofd/R3BPtofReader.cxx
@@ -171,7 +173,9 @@ set(STRUCT_HEADERS
     alpide/ext_h101_mosaic202402.h
     alpide/ext_h101_mosaic202506.h
     alpide/ext_h101_mosaic202507.h
+    alpide/ext_h101_mosaic202606.h
     alpide/ext_h101_hmp.h
+    pas/ext_h101_pas.h
     music/ext_h101_music.h
     twim/ext_h101_twim.h
     tttx/ext_h101_ttt10.h
@@ -248,6 +252,7 @@ set(HEADERS
     alpide/R3BAlpideReader.h
     alpide/R3BMosaicReader.h
     alpide/R3BHmpReader.h
+    pas/R3BPasReader.h
     music/R3BMusicReader.h
     rpc/R3BRpcReader.h
     tttx/R3BTttxReader.h
@@ -274,6 +279,7 @@ set(DIRS
     musli
     mwpc
     neuland
+    pas
     pdc
     pspx
     rolu

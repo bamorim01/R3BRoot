@@ -120,6 +120,9 @@ class R3BCalifaDigitizer : public FairTask
 
     R3BCalifaCrystalPars4Sim* fSim_Par = nullptr; // Parameter Container for a Realistic Simulation
 
+
+
+
     /** Private method NUSmearing
      **
      ** Smears the energy according to some non-uniformity distribution
