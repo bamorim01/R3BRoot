@@ -56,6 +56,7 @@
 #pragma link C++ class R3BFi8Reader+;
 #pragma link C++ class R3BFiberReader+;
 #pragma link C++ class R3BLosReader+;
+#pragma link C++ class R3BNeulosReader+;
 #pragma link C++ class R3BRoluReader+;
 #pragma link C++ class R3BRoluReaderOnline+;
 #pragma link C++ class R3BFrsSciReader+;
@@ -75,6 +76,7 @@
 #pragma link C++ class R3BAlpideReader+;
 #pragma link C++ class R3BHmpReader+;
 #pragma link C++ class R3BPasReader+;
+#pragma link C++ class R3BSfrsFibOneReader+;
 #pragma link C++ class R3BCalifaJulichReader+;
 #pragma link C++ class R3BRpcReader+;
 #pragma link C++ class R3BTwimReader+;
@@ -156,5 +158,7 @@
 #pragma link C++ class EXT_STR_h101_ACTAF2025_onion_t;
 #pragma link C++ class EXT_STR_h101_WRACTAF_onion_t;
 #pragma link C++ class EXT_STR_h101_PAS_onion_t;
+#pragma link C++ class EXT_STR_h101_SFRS_FIB_ONE_onion_t;
+#pragma link C++ class EXT_STR_h101_NEULOS_onion_t; 
 
 #endif

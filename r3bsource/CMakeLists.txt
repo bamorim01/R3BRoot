@@ -39,6 +39,7 @@ set(INCLUDE_DIRECTORIES
     rpc
     sci2
     sci8
+    sfrsfiber
     sync_check
     tofd
     tofi
@@ -94,11 +95,13 @@ set(SRCS
     tofi/R3BTofiReader.cxx
     pdc/R3BPdcReader.cxx
     pas/R3BPasReader.cxx
+    sfrsfiber/R3BSfrsFibOneReader.cxx
     califa/R3BCalifaFebexReader.cxx
     califa/R3BCalifaJulichReader.cxx
     tofd/R3BPtofReader.cxx
     neuland/R3BNeulandTamexReader.cxx
     neuland/R3BNeulandTacquilaReader.cxx
+    neulos/R3BNeulosReader.cxx
     ams/R3BAmsReader.cxx
     foot/R3BFootReader.cxx
     foot/R3BFootSiReader.cxx
@@ -120,6 +123,7 @@ set(STRUCT_HEADERS
     wr/ext_h101_wrmaster.h
     califa/ext_h101_wrcalifa.h
     neuland/ext_h101_wrneuland.h
+    neulos/ext_h101_neulos.h
     ams/ext_h101_wrams.h
     foot/ext_h101_wrfoot.h
     music/ext_h101_wrmusic.h
@@ -176,6 +180,7 @@ set(STRUCT_HEADERS
     alpide/ext_h101_mosaic202606.h
     alpide/ext_h101_hmp.h
     pas/ext_h101_pas.h
+    sfrsfiber/ext_h101_sfrs_fib_one.h
     music/ext_h101_music.h
     twim/ext_h101_twim.h
     tttx/ext_h101_ttt10.h
@@ -246,6 +251,7 @@ set(HEADERS
     tofd/R3BPtofReader.h
     neuland/R3BNeulandTamexReader.h
     neuland/R3BNeulandTacquilaReader.h
+    neulos/R3BNeulosReader.h
     ams/R3BAmsReader.h
     foot/R3BFootReader.h
     foot/R3BFootSiReader.h
@@ -253,6 +259,7 @@ set(HEADERS
     alpide/R3BMosaicReader.h
     alpide/R3BHmpReader.h
     pas/R3BPasReader.h
+    sfrsfiber/R3BSfrsFibOneReader.h
     music/R3BMusicReader.h
     rpc/R3BRpcReader.h
     tttx/R3BTttxReader.h
@@ -279,6 +286,7 @@ set(DIRS
     musli
     mwpc
     neuland
+    neulos
     pas
     pdc
     pspx
@@ -286,6 +294,7 @@ set(DIRS
     rpc
     sci2
     sci8
+    sfrsfiber
     sync_check
     tofd
     tofi

@@ -114,6 +114,8 @@
 #pragma link C++ class R3BNeulandNeutron+;
 #pragma link C++ class R3BNeulandCalData+;
 
+#pragma link C++ class R3BNeulosMappedData+;
+
 #pragma link C++ class R3BPspxMappedData+;
 #pragma link C++ class R3BPspxPrecalData+;
 #pragma link C++ class R3BPspxCalData+;
@@ -172,6 +174,8 @@
 #pragma link C++ class R3BFibMappedData+;
 #pragma link C++ class R3BFibCalData+;
 #pragma link C++ class R3BFibPoint+;
+
+#pragma link C++ class R3BSfrsFibOneMappedData+;
 
 #pragma link C++ class R3BBeamMonitorMappedData+;
 #pragma link C++ class R3BSamplerMappedData+;
