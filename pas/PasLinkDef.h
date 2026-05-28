@@ -23,7 +23,6 @@
 
 #pragma link C++ class R3BPasMapped2Cal+;
 #pragma link C++ class R3BPasCal2Hit+;
-#pragma link C++ class R3BPasOnlineSpectra+;
 
 #endif
 

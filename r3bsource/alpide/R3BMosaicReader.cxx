@@ -336,7 +336,7 @@ bool R3BMosaicReader::R3BRead202606()
 
             case 5:
                 // MOS6 chip 0 -> second telescope sensor 22
-                if (chipid == 0)
+                if (chipid == 1)
                     return 22;
                 return -1;
 

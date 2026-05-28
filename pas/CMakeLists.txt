@@ -15,7 +15,6 @@ file(
     GLOB
     SRCS
     calibration/*.cxx
-    online/*.cxx
     )
 
 change_file_extension(*.cxx *.h HEADERS "${SRCS}")
@@ -32,7 +31,6 @@ add_library_with_dictionary(
     INCLUDEDIRS
     ${CMAKE_CURRENT_SOURCE_DIR}
     calibration
-    online
     DEPENDENCIES
     R3BPassive)
 
