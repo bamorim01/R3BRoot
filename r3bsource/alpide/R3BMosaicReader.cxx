@@ -382,7 +382,7 @@ bool R3BMosaicReader::R3BRead202606()
             new ((*fArray)[fArray->GetEntriesFast()]) R3BAlpideMappedData(fAlpideId,
                                                                           0,
                                                                           mosid + 1,
-                                                                          fData2606->MOSAIC[mosid].CHIPSSTROBEv[hits],
+                                                                          0,//fData2606->MOSAIC[mosid].CHIPSSTROBEv[hits],
                                                                           fChipId,
                                                                           fData2606->MOSAIC[mosid].ROWv[hits],
                                                                           fData2606->MOSAIC[mosid].COLv[hits]);

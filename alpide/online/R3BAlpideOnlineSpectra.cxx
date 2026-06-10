@@ -384,6 +384,10 @@ InitStatus R3BAlpideOnlineSpectra::Init()
 
         auto* cHit_xy = new TCanvas("Y_vs_X", "Correlation Y vs X in mm", 10, 10, 1200, 800);
 
+	auto* cHit_yy = new TCanvas("Y_vs_Y", "Correlation Y vs Y in mm", 10, 10, 1200, 800);
+
+	auto* cHit_xx = new TCanvas("X_vs_X", "Correlation X vs X in mm", 10, 10, 1200, 800);
+
         if (is202606)
         {
             cHit_xy->Divide(3, 2);
@@ -408,6 +412,52 @@ InitStatus R3BAlpideOnlineSpectra::Init()
             }
 
             mainfol->Add(cHit_xy);
+
+	    cHit_yy ->Divide(3,2);
+	    for (Int_t group = 0; group < 5; group++)
+            {
+                cHit_yy->cd(group + 1);
+
+                std::string histName = std::string("fh2_yy_") + GetAlpide202606GroupName(group);
+                std::string histTitle = std::string("Hit Y vs Y, ") + GetAlpide202606GroupTitle(group);
+
+                fh2_yy.push_back(
+                    R3B::root_owned<TH2F>(histName.c_str(), histTitle.c_str(), 400, -40., 40., 240, -20., 20.));
+
+                fh2_yy[group]->GetXaxis()->SetTitle("Y [mm]");
+                fh2_yy[group]->GetYaxis()->SetTitle("Y [mm]");
+                fh2_yy[group]->GetYaxis()->SetTitleOffset(1.1);
+                fh2_yy[group]->GetXaxis()->CenterTitle(true);
+                fh2_yy[group]->GetYaxis()->CenterTitle(true);
+                gPad->SetLogz();
+                fh2_yy[group]->Draw("colz");
+            }
+
+            mainfol->Add(cHit_yy);
+
+
+	   cHit_xx ->Divide(3,2);
+            for (Int_t group = 0; group < 5; group++)
+            {
+                cHit_xx->cd(group + 1);
+
+                std::string histName = std::string("fh2_xx_") + GetAlpide202606GroupName(group);
+                std::string histTitle = std::string("Hit X vs X, ") + GetAlpide202606GroupTitle(group);
+
+                fh2_xx.push_back(
+                    R3B::root_owned<TH2F>(histName.c_str(), histTitle.c_str(), 400, -40., 40., 240, -20., 20.));
+
+                fh2_xx[group]->GetXaxis()->SetTitle("X [mm]");
+                fh2_xx[group]->GetYaxis()->SetTitle("X [mm]");
+                fh2_xx[group]->GetYaxis()->SetTitleOffset(1.1);
+                fh2_xx[group]->GetXaxis()->CenterTitle(true);
+                fh2_xx[group]->GetYaxis()->CenterTitle(true);
+                gPad->SetLogz();
+                fh2_xx[group]->Draw("colz");
+            }
+
+            mainfol->Add(cHit_xx);
+
 
             auto* cHit_xy_cor_202606 =
                 new TCanvas("Y_vs_X_202606_summary", "202606 group hit maps", 10, 10, 1200, 800);
@@ -585,6 +635,20 @@ void R3BAlpideOnlineSpectra::Reset_Histo()
             if (hist)
                 hist->Reset();
         }
+
+	for (const auto& hist : fh2_yy)
+        {
+            if (hist)
+                hist->Reset();
+        }
+
+	for (const auto& hist : fh2_xx)
+        {
+            if (hist)
+                hist->Reset();
+        }
+
+
         for (const auto& hist : fh2_y_x_cor_det)
         {
             if (hist)
@@ -693,9 +757,10 @@ void R3BAlpideOnlineSpectra::Exec(Option_t* /*option*/)
         std::vector<int> mult(fNbSensors, 0);
         auto nHits = fHitItems->GetEntriesFast();
 
-        std::vector<double> x_max(2, NAN);
-        std::vector<double> y_max(2, NAN);
-        std::vector<int> cls_size(2, 0);
+        std::vector<double> x_max(9, NAN);
+        std::vector<double> y_max(9, NAN);
+	
+        std::vector<int> cls_size(9, 0);
 
         if (fh1_Clustermult_total)
             fh1_Clustermult_total->Fill(nHits);
@@ -724,8 +789,107 @@ void R3BAlpideOnlineSpectra::Exec(Option_t* /*option*/)
                 if (group >= 0 && group < static_cast<Int_t>(fh2_y_x.size()))
                 {
                     fh2_y_x[group]->Fill(hit->GetX(), hit->GetY());
+		    
                 }
-                else
+	        if (senid == 0){
+
+			if (hit->GetClusterSize() > cls_size[0])
+			{
+				cls_size[0] = hit->GetClusterSize();
+                        	x_max[0] = hit->GetX();
+                        	y_max[0] = hit->GetY();
+				std::cout << "y" <<y_max[0] << std::endl;
+
+			}
+
+		}
+
+		else if (senid == 1){
+
+			if (hit->GetClusterSize() > cls_size[1])
+                        {
+                                cls_size[1] = hit->GetClusterSize();
+                                x_max[1] = hit->GetX();
+                                y_max[1] = hit->GetY();
+
+                        }
+		}
+		else if (senid == 2){
+
+                        if (hit->GetClusterSize() > cls_size[2])
+                        {
+                                cls_size[2] = hit->GetClusterSize();
+                                x_max[2] = hit->GetX();
+                                y_max[2] = hit->GetY();
+
+                        }
+                }
+
+		else if (senid < 12){
+
+                        if (hit->GetClusterSize() > cls_size[3])
+                        {
+                                cls_size[3] = hit->GetClusterSize();
+                                x_max[3] = hit->GetX();
+                                y_max[3] = hit->GetY();
+
+                        }
+                }
+		else if (senid < 21){
+
+                        if (hit->GetClusterSize() > cls_size[4])
+                        {
+                                cls_size[4] = hit->GetClusterSize();
+                                x_max[4] = hit->GetX();
+                                y_max[4] = hit->GetY();
+
+                        }
+                }
+
+		else if (senid == 21){
+
+                        if (hit->GetClusterSize() > cls_size[5])
+                        {
+                                cls_size[5] = hit->GetClusterSize();
+                                x_max[5] = hit->GetX();
+                                y_max[5] = hit->GetY();
+
+                        }
+                }
+		else if (senid == 22){
+
+                        if (hit->GetClusterSize() > cls_size[6])
+                        {
+                                cls_size[6] = hit->GetClusterSize();
+                                x_max[6] = hit->GetX();
+                                y_max[6] = hit->GetY();
+
+                        }
+                }
+
+		else if (senid ==23){
+
+                        if (hit->GetClusterSize() > cls_size[7])
+                        {
+                                cls_size[7] = hit->GetClusterSize();
+                                x_max[7] = hit->GetX();
+                                y_max[7] = hit->GetY();
+
+                        }
+                }
+
+		else if (senid == 24){
+
+                        if (hit->GetClusterSize() > cls_size[8])
+                        {
+                                cls_size[8] = hit->GetClusterSize();
+                                x_max[8] = hit->GetX();
+                                y_max[8] = hit->GetY();
+
+                        }
+                }
+
+		else
                 {
                     R3BLOG(error, "202606 hit with unmapped sensor group: sensor " << sensorId);
                 }
@@ -770,9 +934,10 @@ void R3BAlpideOnlineSpectra::Exec(Option_t* /*option*/)
 
         if (!is202606 && fMap_Par->GetGeoVersion() == 202506)
         {
-            if (std::isfinite(x_max[0]) && std::isfinite(x_max[1]))
+            if (std::isfinite(x_max[0]) && std::isfinite(x_max[1])){
+		std::cout<<"lalala"<<std::endl;
                 fh2_y_x_cor_det[0]->Fill(x_max[0], x_max[1]);
-
+	    }
             if (std::isfinite(y_max[0]) && std::isfinite(y_max[1]))
                 fh2_y_x_cor_det[1]->Fill(y_max[0], y_max[1]);
 
@@ -785,6 +950,41 @@ void R3BAlpideOnlineSpectra::Exec(Option_t* /*option*/)
             if (cls_size[0] > 0 && cls_size[1] > 0 && fh2_max_clusters)
                 fh2_max_clusters->Fill(cls_size[0], cls_size[1]);
         }
+	
+	if (is202606)
+	{
+
+		if (std::isfinite(x_max[0]) && std::isfinite(x_max[1]))
+			fh2_xx[0]->Fill(x_max[0],x_max[1]);
+		if (std::isfinite(x_max[0]) && std::isfinite(x_max[2]))
+                	fh2_xx[0]->Fill(x_max[0],x_max[2]);
+
+		if(std::isfinite(y_max[0]) && std::isfinite(y_max[1])) 
+			fh2_yy[0]->Fill(y_max[0],y_max[1]);
+
+		if(std::isfinite(y_max[0]) && std::isfinite(y_max[2])) 
+                        fh2_yy[0]->Fill(y_max[0],y_max[2]);
+
+		if(std::isfinite(x_max[3]) && std::isfinite(x_max[4])) 
+                        fh2_xx[1]->Fill(x_max[3],x_max[4]);
+
+		if(std::isfinite(y_max[3]) && std::isfinite(y_max[4])) 
+                        fh2_yy[1]->Fill(y_max[3],y_max[4]);
+		for (int i = 5; i < 8; i++){
+			for (int j=i+1; j < 8;j++){
+				if(std::isfinite(x_max[i]) && std::isfinite(x_max[j])){ 
+                        		fh2_xx[3]->Fill(x_max[i],x_max[j]);
+
+				}
+				if(std::isfinite(y_max[i]) && std::isfinite(y_max[j])){ 
+                                        fh2_yy[3]->Fill(y_max[i],y_max[j]);
+
+                                }
+
+			}
+		}
+
+	}
     }
 
     fNEvents++;
@@ -847,6 +1047,19 @@ void R3BAlpideOnlineSpectra::FinishTask()
             if (hist)
                 hist->Write();
         }
+
+	for (const auto& hist : fh2_xx)
+        {
+            if (hist)
+                hist->Write();
+        }
+	for (const auto& hist : fh2_yy)
+        {
+            if (hist)
+                hist->Write();
+        }
+
+
         for (const auto& hist : fh2_y_x_cor_det)
         {
             if (hist)

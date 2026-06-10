@@ -79,6 +79,8 @@ void R3BAlpideCal2Hit::SetParContainers()
 
     fMap_Par = dynamic_cast<R3BAlpideMappingPar*>(rtdb->getContainer("alpideMappingPar"));
     R3BLOG_IF(fatal, !fMap_Par, "Container alpideMappingPar not found");
+    //std::cout<<"Here1"<<std::endl;
+
 
     fAlpideGeoPar = dynamic_cast<R3BTGeoPar*>(rtdb->getContainer("AlpideGeoPar"));
     fTargetGeoPar = dynamic_cast<R3BTGeoPar*>(rtdb->getContainer("TargetGeoPar"));
@@ -521,6 +523,84 @@ void R3BAlpideCal2Hit::FindClustersDefault()
                                localpos.Y());
                 }
     }
+    else if (fGeoversion == 202606)
+    { 	
+	//std::cout<<"Here"<<std::endl;
+        for (size_t s = 0; s < fNbSensors; s++)
+            for (size_t i = 0; i < nHits; i++)
+                if (mult[s][i] > 0)
+                {
+                    nbcluster++;
+
+                    TVector3 localpos;
+                    localpos.SetXYZ(meancol[s][i] / double(mult[s][i]) * fPixelSize_ls,
+                                    meanrow[s][i] / double(mult[s][i]) * fPixelSize_ss,
+                                    0.0);
+
+                    TVector3 labpos;
+
+                    const double Z_flex1 = 0.;
+
+                    const double Z_flex2 = 10.;
+
+                    const double Z_flex3 = 13.;
+
+		    const double Z_flex4 = 16.;
+
+		    const double Z_flex5 = 19.;
+
+ 		    const double Z_flex6 = 22.;
+
+		    const double Z_flex7 = 25.;
+
+		    const double Z_flex8 = 28.;
+
+		    const double Z_flex9 = 31.;
+
+
+                    // Mosaic-3
+                    if (s == 0)
+                        labpos.SetXYZ(15-localpos.X() + 30. * s, -7.5 + localpos.Y(), Z_flex1);
+                    else if (s == 1)
+                        labpos.SetXYZ(15. - localpos.X() + 30. * (s-1), -7.5 + localpos.Y(), Z_flex2);
+                    // Mosaic-4
+                    else if (s == 2)
+                        labpos.SetXYZ(15. - localpos.X() + 30. * (s-2),-7.5+localpos.Y(), Z_flex3);
+                    else if (s == 3)
+                        labpos.SetXYZ(15. + localpos.X() + 30. * (s-3), -7.5 + localpos.Y(), Z_flex4);
+                    // Mosaic-5
+                    else if (s < 12)
+                        labpos.SetXYZ(135. - localpos.X() + 30. * s, -7.5 + localpos.Y(), Z_flex5);
+
+                    else if (s < 21)
+                        labpos.SetXYZ(135. - localpos.X() + 30. * s, -7.5 +localpos.Y(), Z_flex6);
+                    else if (s == 21)
+                        labpos.SetXYZ(15. - localpos.X() - 30. * (s - 21), -7.5 + localpos.Y(), Z_flex7);
+                    // Mosaic-10
+                    else if (s == 22)
+                        labpos.SetXYZ(15. - localpos.X() + 30. * (s-22), -7.5 + localpos.Y(), Z_flex8);
+
+		    else if (s == 23)
+                        labpos.SetXYZ(15. - localpos.X() + 30. * (s-23),-7.5 + localpos.Y(), Z_flex9);
+
+
+		    AddHitData(s + 1,
+                               mult[s][i],
+                               0,
+                               0,
+                               nullMajor,
+                               0,
+                               0,
+                               nullHu,
+                               labpos.X(),
+                               labpos.Y(),
+                               labpos.Z(),
+                               localpos.X(),
+                               localpos.Y());
+		}
+
+    }
+
 
     R3BLOG(debug, "Number of clusters: " << nbcluster);
     return;

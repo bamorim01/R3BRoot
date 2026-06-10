@@ -122,6 +122,8 @@ class R3BAlpideOnlineSpectra : public FairTask
     TH2F* fh2_sensor_pixelsize;
     TH2F* fh2_theta_phi;
     std::vector<TH2F*> fh2_y_x;
+    std::vector<TH2F*> fh2_yy;
+    std::vector<TH2F*> fh2_xx;
     std::vector<TH2F*> fh2_y_x_cor_det;
     TH2F* fh2_max_clusters;
 
