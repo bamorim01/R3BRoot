@@ -398,22 +398,38 @@ InitStatus R3BAlpideOnlineSpectra::Init()
 
                 std::string histName = std::string("fh2_y_x_") + GetAlpide202606GroupName(group);
                 std::string histTitle = std::string("Hit Y vs X, ") + GetAlpide202606GroupTitle(group);
+		if (group != 1 && group!= 2){
+                	fh2_y_x.push_back(
+                    	R3B::root_owned<TH2F>(histName.c_str(), histTitle.c_str(), 400, -40., 40., 240, -20., 20.));
+		
+                	fh2_y_x[group]->GetXaxis()->SetTitle("X [mm]");
+                	fh2_y_x[group]->GetYaxis()->SetTitle("Y [mm]");
+                	fh2_y_x[group]->GetYaxis()->SetTitleOffset(1.1);
+                	fh2_y_x[group]->GetXaxis()->CenterTitle(true);
+                	fh2_y_x[group]->GetYaxis()->CenterTitle(true);
+                	gPad->SetLogz();
+                	fh2_y_x[group]->Draw("colz");
+            	}
+		else {
 
-                fh2_y_x.push_back(
-                    R3B::root_owned<TH2F>(histName.c_str(), histTitle.c_str(), 400, -40., 40., 240, -20., 20.));
+			fh2_y_x.push_back(
+                        R3B::root_owned<TH2F>(histName.c_str(), histTitle.c_str(), 400, -270., 270., 240, -20., 20.));
+                
+                        fh2_y_x[group]->GetXaxis()->SetTitle("X [mm]");
+                        fh2_y_x[group]->GetYaxis()->SetTitle("Y [mm]");
+                        fh2_y_x[group]->GetYaxis()->SetTitleOffset(1.1);
+                        fh2_y_x[group]->GetXaxis()->CenterTitle(true);
+                        fh2_y_x[group]->GetYaxis()->CenterTitle(true);
+                        gPad->SetLogz();
+                        fh2_y_x[group]->Draw("colz");
+		}
 
-                fh2_y_x[group]->GetXaxis()->SetTitle("X [mm]");
-                fh2_y_x[group]->GetYaxis()->SetTitle("Y [mm]");
-                fh2_y_x[group]->GetYaxis()->SetTitleOffset(1.1);
-                fh2_y_x[group]->GetXaxis()->CenterTitle(true);
-                fh2_y_x[group]->GetYaxis()->CenterTitle(true);
-                gPad->SetLogz();
-                fh2_y_x[group]->Draw("colz");
-            }
+	}
 
             mainfol->Add(cHit_xy);
 
 	    cHit_yy ->Divide(3,2);
+	    
 	    for (Int_t group = 0; group < 5; group++)
             {
                 cHit_yy->cd(group + 1);
@@ -421,6 +437,7 @@ InitStatus R3BAlpideOnlineSpectra::Init()
                 std::string histName = std::string("fh2_yy_") + GetAlpide202606GroupName(group);
                 std::string histTitle = std::string("Hit Y vs Y, ") + GetAlpide202606GroupTitle(group);
 
+		
                 fh2_yy.push_back(
                     R3B::root_owned<TH2F>(histName.c_str(), histTitle.c_str(), 400, -40., 40., 240, -20., 20.));
 
@@ -798,7 +815,7 @@ void R3BAlpideOnlineSpectra::Exec(Option_t* /*option*/)
 				cls_size[0] = hit->GetClusterSize();
                         	x_max[0] = hit->GetX();
                         	y_max[0] = hit->GetY();
-				std::cout << "y" <<y_max[0] << std::endl;
+				//std::cout << "y" <<y_max[0] << std::endl;
 
 			}
 
@@ -935,7 +952,7 @@ void R3BAlpideOnlineSpectra::Exec(Option_t* /*option*/)
         if (!is202606 && fMap_Par->GetGeoVersion() == 202506)
         {
             if (std::isfinite(x_max[0]) && std::isfinite(x_max[1])){
-		std::cout<<"lalala"<<std::endl;
+		//std::cout<<"lalala"<<std::endl;
                 fh2_y_x_cor_det[0]->Fill(x_max[0], x_max[1]);
 	    }
             if (std::isfinite(y_max[0]) && std::isfinite(y_max[1]))

@@ -559,21 +559,21 @@ void R3BAlpideCal2Hit::FindClustersDefault()
 
 
                     // Mosaic-3
-                    if (s == 0)
-                        labpos.SetXYZ(15-localpos.X() + 30. * s, -7.5 + localpos.Y(), Z_flex1);
-                    else if (s == 1)
-                        labpos.SetXYZ(15. - localpos.X() + 30. * (s-1), -7.5 + localpos.Y(), Z_flex2);
+                    if (s == 24)
+                        labpos.SetXYZ(15-localpos.X() + 30. * (s-24), -7.5 + localpos.Y(), Z_flex1);
+                    else if (s == 0)
+                        labpos.SetXYZ(15. - localpos.X() + 30. * (s), -7.5 + localpos.Y(), Z_flex2);
                     // Mosaic-4
+                    else if (s == 1)
+                        labpos.SetXYZ(15. - localpos.X() + 30. * (s-1),-7.5+localpos.Y(), Z_flex3);
                     else if (s == 2)
-                        labpos.SetXYZ(15. - localpos.X() + 30. * (s-2),-7.5+localpos.Y(), Z_flex3);
-                    else if (s == 3)
-                        labpos.SetXYZ(15. + localpos.X() + 30. * (s-3), -7.5 + localpos.Y(), Z_flex4);
+                        labpos.SetXYZ(15. - localpos.X() + 30. * (s-2), -7.5 + localpos.Y(), Z_flex4);
                     // Mosaic-5
                     else if (s < 12)
-                        labpos.SetXYZ(135. - localpos.X() + 30. * s, -7.5 + localpos.Y(), Z_flex5);
+                        labpos.SetXYZ(135. - localpos.X() - 30. * (s - 3), -7.5 + localpos.Y(), Z_flex5);
 
                     else if (s < 21)
-                        labpos.SetXYZ(135. - localpos.X() + 30. * s, -7.5 +localpos.Y(), Z_flex6);
+                        labpos.SetXYZ(135. - localpos.X() - 30. * (s - 12), -7.5 +localpos.Y(), Z_flex6);
                     else if (s == 21)
                         labpos.SetXYZ(15. - localpos.X() - 30. * (s - 21), -7.5 + localpos.Y(), Z_flex7);
                     // Mosaic-10
