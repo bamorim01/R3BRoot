@@ -84,7 +84,7 @@ bool R3BCalifaGeometry::Init(int version)
 
         case 2024:
             // S118 and S091 experiments: Half Barrel (extended) + Full-IPHOS + Full-CEPA-CsI
-            geoPath += "califa_v2024.1.geo.root";
+            geoPath += "califa_v2024.2.geo.root";
             fNumCrystals = 5088;
             fGeometryVersion = version;
             break;

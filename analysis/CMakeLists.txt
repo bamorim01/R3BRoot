@@ -14,7 +14,7 @@
 file(
     GLOB
     SRCS
-    ./online/*.cxx
+    #./online/*.cxx
     ./offline/*.cxx
     ./pars/*.cxx)
 

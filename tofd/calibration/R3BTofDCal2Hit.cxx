@@ -739,7 +739,9 @@ void R3BTofDCal2Hit::Exec(Option_t* option)
                     // cout << parz[0] << "    " << parz[1] << "    " << parz[2] << endl;
                 }
                 qb_corr = qb;                                       // charge value before applying parz[] correction
-                qb = parz[0] * TMath::Power(qb, parz[2]) + parz[1]; // Q' = [0] * pow(Q, [2]) + [1]
+                //qb = parz[0] * TMath::Power(qb, parz[2]) + parz[1]; // Q' = [0] * pow(Q, [2]) + [1]
+
+		qb = parz[0] + parz[1]*qb + parz[2]*qb*qb;
 
                 LOG(debug) << "Charges in this event " << qb << " plane " << iPlane << " ibar " << iBar;
                 LOG(debug) << "Times in this event " << THit << " plane " << iPlane << " ibar " << iBar;

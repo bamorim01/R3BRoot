@@ -354,21 +354,21 @@ void R3BAlpideCal2Hit::FindClustersDefault()
 
                     TVector3 labpos;
                     if (s < 3)
-                        labpos.SetXYZ(70.346 + (TMath::Sin(-1*a_rot))* (localpos.X() + (30 * s)), localpos.Y() + 29.4327, (TMath::Cos(a_rot))*(localpos.X() + (30*s)) + 17.094);
+                        labpos.SetXYZ(70.3436 + (TMath::Sin(-1*a_rot))* (localpos.X() + (30 * s)), localpos.Y() + 29.4327, (TMath::Cos(a_rot))*(localpos.X() + (30*s)) + 17.094);
                     else if (s < 6)
-                        labpos.SetXYZ(70.346 + (TMath::Sin(-1*a_rot))* (localpos.X() + (30 * (-s + 5))), -localpos.Y() + 29.4327,(TMath::Cos(a_rot))*(localpos.X() + 30*(-s + 5)) + 17.094);
+                        labpos.SetXYZ(70.3436 + (TMath::Sin(-1*a_rot))* (-localpos.X() + 30 + (30 * (-s + 5))), -localpos.Y() + 29.4327,(TMath::Cos(a_rot))*(-localpos.X() + 30+(30*(-s + 5))) + 17.094);
                     else if (s < 9)
-                        labpos.SetXYZ(-70.346 + (TMath::Sin(a_rot))* (localpos.X() + (30 * (s - 6))), 29.4327 - localpos.Y() ,(TMath::Cos(a_rot))*(localpos.X() + 30 *(s - 6)) + 17.094);
+                        labpos.SetXYZ(-70.3436 + (TMath::Sin(a_rot))* (localpos.X() + (30 * (s - 6))), 29.4327 - localpos.Y() ,(TMath::Cos(a_rot))*(localpos.X() + 30 *(s - 6)) + 17.094);
                     else if (s < 12)
-                        labpos.SetXYZ(-70.346 + (TMath::Sin(a_rot))* (localpos.X() + (30 * (-s + 11))), 29.4337 + localpos.Y(), (TMath::Cos(a_rot))*(localpos.X() + 30*(-s + 11)) + 17.094);
+                        labpos.SetXYZ(-70.3436 + (TMath::Sin(a_rot))* (-localpos.X() + 30 +(30 * (-s + 11))), 29.4337 + localpos.Y(), (TMath::Cos(a_rot))*(-localpos.X() + 30+ (30*(-s + 11))) + 17.094);
                     else if (s < 15)
-                        labpos.SetXYZ(-70.346 + (TMath::Sin(a_rot))* (localpos.X() + (30 * (s - 12))), -29.4327 - localpos.Y(), (TMath::Cos(a_rot))*(localpos.X() + 30*(s - 12)) + 17.094);
+                        labpos.SetXYZ(-70.3436 + (TMath::Sin(a_rot))* (localpos.X() + (30 * (s - 12))), -29.4327 - localpos.Y(), (TMath::Cos(a_rot))*(localpos.X() + 30*(s - 12)) + 17.094);
                     else if (s < 18)
-                        labpos.SetXYZ(-70.346 + (TMath::Sin(a_rot))* (localpos.X() + (30 * (-s + 17))), -29.4327 + localpos.Y(), (TMath::Cos(a_rot))*(localpos.X() + 30*(-s + 17)) + 17.094);
+                        labpos.SetXYZ(-70.3436 + (TMath::Sin(a_rot))* (-localpos.X() + 30 + (30 * (-s + 17))), -29.4327 + localpos.Y(), (TMath::Cos(a_rot))*(-localpos.X() +30 +(30*(-s + 17))) + 17.094);
                     else if (s < 21)
-                        labpos.SetXYZ(70.346 +  (TMath::Sin(-1*a_rot))* (localpos.X() + (30 * (s - 18))), -29.4327 + localpos.Y(), (TMath::Cos(a_rot))*(localpos.X() + 30*(s - 18)) + 17.094);
+                        labpos.SetXYZ(70.3436 +  (TMath::Sin(-1*a_rot))* (localpos.X() + (30 * (s - 18))), -29.4327 + localpos.Y(), (TMath::Cos(a_rot))*(localpos.X() + 30*(s - 18)) + 17.094);
                     else
-                        labpos.SetXYZ(70.346 - (TMath::Sin(-1*a_rot))* -(localpos.X() + (30 * (-s + 23))),  -29.4337 - localpos.Y() , (TMath::Cos(a_rot))*(localpos.X() + 30*(-s + 23)) + 17.094);
+                        labpos.SetXYZ(70.3436 - (TMath::Sin(-1*a_rot))* -(-localpos.X() + 30+ (30 * (-s + 23))),  -29.4337 - localpos.Y() , (TMath::Cos(a_rot))*(-localpos.X() +30+( 30*(-s + 23))) + 17.094);
 
                     AddHitData(s + 1,
                                mult[s][i],

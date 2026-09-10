@@ -92,7 +92,7 @@ void R3BIncomingIDPar::putParams(FairParamList* list)
     fTof2InvV_p0->Set(fNumDet);
     list->add("Tof2InvV_p0", *fTof2InvV_p0);
     fTof2InvV_p1->Set(fNumDet);
-    list->add("DTof2InvV_p1", *fTof2InvV_p1);
+    list->add("Tof2InvV_p1", *fTof2InvV_p1);
     list->add("x0_Aq", fx0_Aq);
     list->add("y0_Aq", fy0_Aq);
     list->add("ang_Aq", fang_Aq);

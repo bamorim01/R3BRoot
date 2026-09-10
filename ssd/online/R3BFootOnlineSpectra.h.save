@@ -164,8 +164,8 @@ class R3BFootOnlineSpectra : public FairTask
     int dim = 6;
 
     // Variables measured by each foot (example of G-249 experiment)
-    std::vector<int> fXNdx = {1,3,6,8};//{ 0, 2, 5, 7 };
-    std::vector<int> fYNdx = {2,4,5,7};//{ 1, 3, 4, 6 };
+    std::vector<int> fXNdx = { 1, 3, 5, 7 };
+    std::vector<int> fYNdx = { 2, 4, 6, 8 };
 
     // Different combinations for correlations
     std::vector<int> fCorrNdxX;

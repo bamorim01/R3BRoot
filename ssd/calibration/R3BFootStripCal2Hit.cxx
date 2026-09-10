@@ -479,9 +479,9 @@ void R3BFootStripCal2Hit::Exec(Option_t* /*option*/)
     if (fHit_Par)
         EtaCorrectionAndChargeCal();
     
-    std::cout << "fThSum" <<fThSum << std::endl;
-    std::cout << "fMaxNumClusters" << fMaxNumClusters << std::endl;
-    std::cout << "fMaxNumStrips" << fMaxNumStrips << std::endl;
+    //std::cout << "fThSum" <<fThSum << std::endl;
+    //std::cout << "fMaxNumClusters" << fMaxNumClusters << std::endl;
+    //std::cout << "fMaxNumStrips" << fMaxNumStrips << std::endl;
 
     // Filling HitData
     for (uint8_t i = 0; i < fMaxNumDet; i++)
@@ -493,7 +493,7 @@ void R3BFootStripCal2Hit::Exec(Option_t* /*option*/)
 	    
             if (ClusterESum[i][j] > fThSum && ClusterMult[i] < fMaxNumClusters && ClusterNStrip[i][j] < fMaxNumStrips)
             {
-		std::cout << i + 1 << std::endl;
+		//std::cout << i + 1 << std::endl;
                 AddHitData(i + 1,
                            ClusterMult[i],
                            pos,
